@@ -1,0 +1,1577 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Análise de NC, Reclamações, Sugestões de Melhoria e Elogios · Unidade de Ensino</title>
+<style>
+:root{
+  --bg:#ECF0EF; --surface:#FFFFFF; --surface-2:#F5F7F6;
+  --ink:#152A2E; --ink-soft:#4B6167; --line:#D7DEDC;
+  --petrol:#0E4A54; --petrol-deep:#092E35; --petrol-tint:#E3EDEE;
+  --ok:#2E7D5B; --ok-bg:#E4F1EA;
+  --warn:#9A6B12; --warn-bg:#F7EDD8;
+  --bad:#A93A32; --bad-bg:#F6E4E2;
+  --info:#2F6DAE; --info-bg:#E5EEF7;
+  --mono:ui-monospace,"Cascadia Mono",Consolas,monospace;
+  --sans:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+  --radius:10px; --shadow:0 1px 3px rgba(9,46,53,.08),0 4px 16px rgba(9,46,53,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:14.5px;line-height:1.5}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
+
+.app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+.sidebar{background:var(--petrol-deep);color:#DCE8E9;position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column}
+.brand{padding:18px 18px 14px;border-bottom:1px solid rgba(255,255,255,.12)}
+.brand h1{font-size:15px;font-weight:700;color:#fff;line-height:1.25}
+.brand .sub{font-family:var(--mono);font-size:10.5px;color:#8FB4B9;margin-top:4px;letter-spacing:.05em}
+.nav{padding:12px 10px;flex:1}
+.nav a{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:8px;color:#C9DADC;text-decoration:none;font-size:13.5px;margin:2px 0}
+.nav a:hover{background:rgba(255,255,255,.08);color:#fff}
+.nav a.active{background:var(--petrol);color:#fff;font-weight:600}
+.nav a .n{font-family:var(--mono);font-size:12px;color:#7FA3A8;min-width:18px;text-align:center}
+.nav a.active .n{color:#BFE0E4}
+.nav .badge{margin-left:auto;background:rgba(255,255,255,.16);border-radius:999px;font-size:11px;padding:1px 7px}
+.sidebar .foot{padding:13px 18px;border-top:1px solid rgba(255,255,255,.12);font-size:11px;color:#7FA3A8;line-height:1.45}
+
+.main{padding:24px 30px 70px;max-width:1120px;width:100%}
+.page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+.page-head h2{font-size:21px;font-weight:700;letter-spacing:-.01em}
+.page-head .clause{display:inline-block;font-family:var(--mono);font-size:11px;background:var(--petrol-tint);color:var(--petrol);padding:3px 8px;border-radius:6px;margin-bottom:6px}
+.page-head .sub{color:var(--ink-soft);font-size:13px;margin-top:4px;max-width:660px}
+.actions-row{display:flex;gap:8px;flex-wrap:wrap}
+
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:8px 14px;border-radius:8px;font-size:13.5px;font-weight:600;display:inline-flex;align-items:center;gap:7px}
+.btn:hover{background:var(--surface-2)}
+.btn.primary{background:var(--petrol);border-color:var(--petrol);color:#fff}
+.btn.primary:hover{background:#0B3C45}
+.btn.danger{color:var(--bad);border-color:#E3C3C0}
+.btn.danger:hover{background:var(--bad-bg)}
+.btn.small{padding:4px 9px;font-size:12px;border-radius:6px}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--petrol)}
+.btn.ghost:hover{background:var(--petrol-tint)}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:13px;margin-bottom:22px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:15px 17px;box-shadow:var(--shadow);cursor:pointer}
+.card:hover{transform:translateY(-2px);transition:transform .12s}
+.card .k{font-size:11.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em}
+.card .v{font-size:28px;font-weight:700;margin-top:5px;font-variant-numeric:tabular-nums}
+.card .d{font-size:12px;color:var(--ink-soft);margin-top:2px}
+.card.alert .v{color:var(--bad)} .card.warn .v{color:var(--warn)} .card.good .v{color:var(--ok)}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:20px}
+.panel .panel-head{padding:12px 17px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.panel .panel-head h3{font-size:14px;font-weight:700}
+.panel .panel-body{padding:15px 17px}
+
+.main.wide{max-width:none}
+table.grid td.wrapcell{white-space:normal}
+table.grid td.wrapcell .trunc{white-space:normal;overflow:visible;text-overflow:clip;max-width:none;display:block}
+table.grid td.wrapcell.desc{min-width:380px}
+table.grid td.wrapcell.proc{min-width:200px}
+.table-wrap{overflow-x:auto}
+table.grid{width:100%;border-collapse:collapse;font-size:13.5px}
+table.grid th{background:var(--surface-2);text-align:left;padding:9px 11px;font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);border-bottom:1px solid var(--line);white-space:nowrap}
+table.grid td{padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+table.grid tr:last-child td{border-bottom:none}
+table.grid tbody tr:hover td{background:#F8FAF9}
+.code{font-family:var(--mono);font-size:12px;color:var(--petrol);white-space:nowrap}
+.trunc{max-width:330px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+.row-actions{white-space:nowrap;text-align:right}
+.empty{padding:38px 20px;text-align:center;color:var(--ink-soft)}
+.empty .big{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:4px}
+
+.chip{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11.5px;font-weight:600;white-space:nowrap}
+.chip.ok{background:var(--ok-bg);color:var(--ok)}
+.chip.warn{background:var(--warn-bg);color:var(--warn)}
+.chip.bad{background:var(--bad-bg);color:var(--bad)}
+.chip.info{background:var(--info-bg);color:var(--info)}
+.chip.neutral{background:var(--surface-2);color:var(--ink-soft);border:1px solid var(--line)}
+
+.toolbar{display:flex;gap:9px;align-items:center;margin-bottom:13px;flex-wrap:wrap}
+.search{flex:1;min-width:210px;max-width:360px;position:relative}
+.search input{width:100%;padding:9px 12px 9px 32px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.search::before{content:"⌕";position:absolute;left:11px;top:7px;font-size:17px;color:var(--ink-soft)}
+select.filter{padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+
+/* ---- formulário ---- */
+.form-wrap{display:grid;grid-template-columns:1fr 230px;gap:20px;align-items:start}
+.fsection{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden}
+.fsection>h3{background:var(--petrol);color:#fff;font-size:13.5px;padding:10px 17px;display:flex;align-items:center;gap:9px}
+.fsection>h3 .cl{font-family:var(--mono);font-size:10.5px;background:rgba(255,255,255,.18);padding:1px 6px;border-radius:5px;font-weight:400}
+.fsection .fbody{padding:16px 17px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field.full{grid-column:1/-1}
+.field label{font-size:12.5px;font-weight:600;color:var(--ink-soft)}
+.field label .q{font-family:var(--mono);font-size:11px;color:var(--petrol);margin-right:5px}
+.field label .req{color:var(--bad)}
+.field .hint{font-size:11.5px;color:var(--ink-soft);font-style:italic}
+.field input,.field select,.field textarea{padding:8px 10px;border:1px solid var(--line);border-radius:7px;background:var(--surface);width:100%}
+.field textarea{min-height:68px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--petrol);outline-offset:1px;border-color:var(--petrol)}
+.field.err input,.field.err select,.field.err textarea,.field.err .boxlist{border-color:var(--bad);background:#FFF8F7}
+.errmsg{font-size:11.5px;color:var(--bad);font-weight:600}
+.boxlist{border:1px solid var(--line);border-radius:7px;padding:9px 11px;background:var(--surface);display:flex;flex-direction:column;gap:6px;max-height:210px;overflow-y:auto}
+.boxlist label{display:flex;gap:8px;align-items:flex-start;font-weight:400;font-size:13.5px;color:var(--ink);cursor:pointer}
+.boxlist input{width:auto;margin-top:3px}
+.ishi{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.ishi .cat{border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.ishi .cat h4{background:var(--surface-2);font-size:12px;padding:7px 11px;color:var(--petrol);letter-spacing:.04em;text-transform:uppercase}
+.ishi .cat .cl{padding:9px 11px;display:flex;flex-direction:column;gap:6px}
+.ishi .cat .cl label{display:flex;gap:7px;font-size:13px;align-items:flex-start;cursor:pointer}
+.ishi .cat .cl input[type=checkbox]{width:auto;margin-top:3px}
+.ishi .cat .cl input[type=text]{font-size:12.5px;padding:5px 8px}
+.why{display:flex;gap:10px;align-items:flex-start;margin-bottom:9px}
+.why .nb{background:var(--petrol-tint);color:var(--petrol);font-family:var(--mono);font-size:12px;font-weight:700;border-radius:7px;padding:7px 10px;white-space:nowrap;margin-top:2px}
+.why textarea{min-height:52px}
+.sticky-side{position:sticky;top:18px;display:flex;flex-direction:column;gap:12px}
+.side-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow)}
+.side-card h4{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);margin-bottom:9px}
+.side-card .big{font-size:20px;font-weight:700;font-family:var(--mono);color:var(--petrol)}
+.prog{background:var(--surface-2);border:1px solid var(--line);border-radius:999px;height:8px;overflow:hidden;margin:7px 0}
+.prog i{display:block;height:100%;background:var(--petrol)}
+.side-card ul{list-style:none;font-size:12.5px;color:var(--ink-soft);display:flex;flex-direction:column;gap:5px}
+.side-card ul li::before{content:"•";color:var(--petrol);margin-right:6px}
+.alertbox{border-left:3px solid var(--warn);background:var(--warn-bg);color:#6B4A0C;padding:9px 12px;border-radius:7px;font-size:12.5px;margin-bottom:10px}
+.alertbox.bad{border-color:var(--bad);background:var(--bad-bg);color:#7D2A24}
+.alertbox.info{border-color:var(--info);background:var(--info-bg);color:#1E4E7E}
+
+.detail dl{display:grid;grid-template-columns:230px 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.detail dt{background:var(--surface-2);padding:8px 12px;font-size:12.5px;font-weight:600;color:var(--ink-soft)}
+.detail dd{background:var(--surface);padding:8px 12px;font-size:13.5px;white-space:pre-wrap}
+.detail h3{font-size:13.5px;margin:18px 0 8px;color:var(--petrol);border-bottom:2px solid var(--petrol-tint);padding-bottom:4px}
+
+.export-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:13px}
+.export-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+.export-card h4{font-size:14.5px;margin-bottom:6px}
+.export-card p{font-size:12.5px;color:var(--ink-soft);margin-bottom:13px;min-height:62px}
+.fmt{font-family:var(--mono);font-size:11px;background:var(--petrol-tint);color:var(--petrol);padding:2px 7px;border-radius:5px;margin-bottom:9px;display:inline-block}
+
+.hist-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.hist-item:last-child{border-bottom:none}
+.hist-item .ts{font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);white-space:nowrap;min-width:126px}
+.hist-item .act{min-width:84px}
+
+.toast{position:fixed;bottom:20px;right:20px;background:var(--petrol-deep);color:#fff;padding:11px 18px;border-radius:9px;font-size:13.5px;box-shadow:0 6px 24px rgba(0,0,0,.25);opacity:0;transform:translateY(8px);transition:.2s;z-index:99;pointer-events:none}
+.toast.show{opacity:1;transform:none}
+.bar{display:flex;align-items:center;gap:9px;margin-bottom:7px;font-size:13px}
+.bar .lab{min-width:190px;color:var(--ink-soft)}
+.bar .track{flex:1;background:var(--surface-2);border:1px solid var(--line);height:16px;border-radius:5px;overflow:hidden}
+.bar .track i{display:block;height:100%;background:var(--petrol)}
+.bar .val{font-family:var(--mono);font-size:12px;min-width:26px;text-align:right}
+
+@media (max-width:1000px){ .form-wrap{grid-template-columns:1fr} .sticky-side{position:static} }
+@media (max-width:900px){
+  .app{grid-template-columns:1fr} .sidebar{position:relative;height:auto}
+  .main{padding:16px 13px 60px} .fsection .fbody{grid-template-columns:1fr}
+  .ishi{grid-template-columns:1fr} .detail dl{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <h1>Análise de NC, Reclamações,<br>Sugestões de Melhoria e Elogios</h1>
+      <div class="sub">UNIDADE DE ENSINO · ULSG</div>
+    </div>
+    <nav class="nav" id="nav"></nav>
+    <div class="foot">Aplicação autónoma (offline).<br>Dados guardados no navegador, não no ficheiro.<br>
+      <a href="#" style="color:#8FB4B9" onclick="go('exportar');return false;">Cópia de segurança e reposição</a></div>
+  </aside>
+  <main class="main" id="main"></main>
+</div>
+<div class="toast" id="toast"></div>
+<input type="file" id="importFile" accept="application/json" style="display:none">
+<input type="file" id="importXls" accept=".xlsx,.csv,text/csv" style="display:none">
+
+<script>
+/* =========================================================
+   ULSG · Unidade de Ensino
+   Registo e análise de NC, reclamações, SM e elogios
+   Cláusulas 9.1 / 9.2 / 10.2 da NP EN ISO 9001:2015
+   ========================================================= */
+const DB_KEY='ulsg_ue_nc_v1';
+
+const TIPOS=['Não conformidade','Reclamação','Sugestão de melhoria','Ponto fraco','Elogio'];
+const PREFIXO={'Não conformidade':'NC','Reclamação':'REC','Sugestão de melhoria':'SM','Ponto fraco':'PF','Elogio':'ELO'};
+const ORIGENS=['Auditorias internas (9.2.2)','Auditoria externa / certificação (9.2)','Reclamação de parte interessada',
+'Monitorização e medição de processos (9.1)','Revisão pela gestão (9.3)','Avaliação de fornecedores (8.4)',
+'Questionário de satisfação (9.1.2)','Deteção interna pela equipa','Outra'];
+const CLASSIF=['Maior','Menor','Observação','Não aplicável'];
+const UNIDADES=['Unidade de Ensino','Biblioteca','Unidade de Ensino e Biblioteca','Internato Médico','Outra'];
+/* Catálogo conforme ULSG.UE.Imp.009.01 — Controlo de Documentos do SGQ (atualizado em 21/08/2026) */
+const CAT_BASE={proc:[
+ ['ULSG.UE.PQ.001','Planeamento e Controlo da Gestão','01','Processo da Qualidade'],
+ ['ULSG.UE.PQ.002','Gestão do Estágio','05','Processo da Qualidade'],
+ ['ULSG.UE.PQ.003','Controlo de Documentos e Registos','03','Processo da Qualidade'],
+ ['ULSG.UE.PQ.004','Melhoria','01','Processo da Qualidade'],
+ ['ULSG.UE.PI.001','Aquisição de Produtos e Serviços','03','Procedimento Interno'],
+ ['ULSG.UE.PI.002','Auditorias Internas','01','Procedimento Interno'],
+ ['ULSG.UE.PI.003','Gestão da Infraestrutura, do Equipamento e do Ambiente de Trabalho','01','Procedimento Interno'],
+ ['ULSG.UE.PI.004','Gestão de Recursos Humanos','02','Procedimento Interno'],
+ ['ULSG.UE.PI.005','Gestão da Biblioteca da ULSG','02','Procedimento Interno'],
+ ['ULSG.UE.PO.001','Cartão de Identificação do Estagiário','03','Procedimento Operativo'],
+ ['ULSG.UE.PO.002','Gestão de Estágios de Internato Médico','02','Procedimento Operativo'],
+ ['ULSG.UE.PO.003','Segurança da Informação','01','Procedimento Operativo'],
+ ['ULSG.UE.PO.004','Avaliação da Satisfação das Instituições, Serviços e Estagiários','04','Procedimento Operativo'],
+ ['ULSG.UE.PO.005','Reafetação e Emissão de Declarações — Internato Médico','01','Procedimento Operativo'],
+ ['ULSG.UE.PO.006','Compensação, Denúncias, Baixas Médicas e Idoneidades — Internato Médico','00','Procedimento Operativo'],
+ ['ULSG.UE.PO.007','Exame de Especialidade de Internato Médico','00','Procedimento Operativo'],
+ ['ULSG.UE.PO.008','Avaliações de Internato Médico','01','Procedimento Operativo'],
+ ['ULSG.UE.PO.009','Gestão de Estágios de Residência Farmacêutica','00','Procedimento Operativo'],
+ ['ULSG.UE.PO.010','Avaliação da Satisfação dos Médicos Internos','01','Procedimento Operativo']],
+doc:[
+ ['ULSG.UE.PL.001','Política da Qualidade','02','Política'],
+ ['ULSG.Man.001','Manual de Gestão da Qualidade','04','Manual'],
+ ['ULSG.UE.Reg.001','Regulamento de Estágios','04','Regulamento'],
+ ['ULSG.UE.Mod.001','Cartão do Estagiário','01','Modelo'],
+ ['ULSG.UE.Mod.002','Guia de Acolhimento do Utente','03','Modelo'],
+ ['ULSG.UE.Mod.003','(minuta) Protocolo de Colaboração Institucional','00','Modelo'],
+ ['ULSG.UE.Mod.004','(minuta) Contrato de Estágio Profissional','00','Modelo (obsoleto)'],
+ ['ULSG.UE.Mod.005','Envio de Cartões de Estágio','00','Modelo'],
+ ['ULSG.UE.Mod.006','Análise SWOT','00','Modelo'],
+ ['ULSG.UE.Mod.007','Guias de Supervisão e Integração','01','Modelo'],
+ ['ULSG.UE.Imp.001','Análise de Não Conformidades, Reclamações e Sugestões de Melhoria','02','Impresso'],
+ ['ULSG.UE.Imp.002','Análise Causa Raiz','01','Impresso (obsoleto)'],
+ ['ULSG.UE.Imp.003','Reclamações, Sugestões, Elogios e Propostas de Melhoria','02','Impresso'],
+ ['ULSG.UE.Imp.004','Mapeamento de Partes Interessadas','01','Impresso'],
+ ['ULSG.UE.Imp.005','Questionário de Avaliação da Satisfação dos Serviços Recetores','03','Impresso'],
+ ['ULSG.UE.Imp.006','Questionário de Avaliação da Satisfação das Instituições','03','Impresso'],
+ ['ULSG.UE.Imp.007','Questionário de Avaliação da Satisfação dos Estagiários','03','Impresso'],
+ ['ULSG.UE.Imp.008','Controlo de Documentos e Registos','01','Impresso'],
+ ['ULSG.UE.Imp.009','Controlo de Documentos do SGQ','01','Impresso'],
+ ['ULSG.UE.Imp.010','Expediente','01','Impresso'],
+ ['ULSG.UE.Imp.011','Monitorização de Objetivos','02','Impresso'],
+ ['ULSG.UE.Imp.012','Avaliação de Fornecedores Internos e Externos','02','Impresso'],
+ ['ULSG.UE.Imp.013','Identificação do Estagiário','01','Impresso'],
+ ['ULSG.UE.Imp.014','Registo de Obsoletos','01','Impresso'],
+ ['ULSG.UE.Imp.015','Plano de Atividades / Ação','01','Impresso'],
+ ['ULSG.UE.Imp.016','Registo do Internato Médico','01','Impresso'],
+ ['ULSG.UE.Imp.017','Gestão de Estágios na ULSG','01','Impresso'],
+ ['ULSG.UE.Imp.018','Integração de Colaborador / Estagiário','01','Impresso'],
+ ['ULSG.UE.Imp.019','Avaliação da Integração','02','Impresso'],
+ ['ULSG.UE.Imp.020','Descrição de Funções','01','Impresso'],
+ ['ULSG.UE.Imp.021','Declaração de Entrega e Devolução de Cartão de Estacionamento','01','Impresso'],
+ ['ULSG.UE.Imp.022','Avaliação de Estágio (proposta)','00','Impresso'],
+ ['ULSG.UE.Imp.023','Questionário de Avaliação Intercalar do Estágio','01','Impresso'],
+ ['ULSG.UE.Imp.024','Gestão da Biblioteca','01','Impresso'],
+ ['ULSG.UE.Imp.025','Plano Individual de Estágio','00','Impresso'],
+ ['ULSG.UE.Imp.026','Declaração de Sigilo e Confidencialidade','00','Impresso'],
+ ['ULSG.UE.Imp.027','Check-list de Novo Colaborador ou Estagiário','00','Impresso'],
+ ['ULSG.UE.Imp.028','Elogios','00','Impresso'],
+ ['ULSG.UE.Imp.029','Divulgação das Revistas Disponíveis na Biblioteca','00','Impresso'],
+ ['ULSG.UE.Imp.030','Pedido de Estágio de Internato Médico','00','Impresso'],
+ ['ULSG.UE.Imp.031','Controlo do Período de Compensação por Baixa Médica','00','Impresso'],
+ ['ULSG.UE.Imp.032','Follow-up de Médicos Internos','00','Impresso'],
+ ['ULSG.UE.Imp.033','Inquéritos aos Médicos Internos de Formação Geral (IFG)','00','Impresso'],
+ ['ULSG.UE.Imp.034','Inquérito aos Médicos Internos de Formação Especializada (IFE)','00','Impresso'],
+ ['ULSG.UE.Imp.035','Check-list de Receção e Integração de Estagiários','00','Impresso'],
+ ['ULSG.UE.Imp.036','Avaliação da Eficácia da Formação','00','Impresso'],
+ ['ULSG.UE.Imp.037','Termo de Responsabilidade e Compromisso de Estágio de Observação','00','Impresso'],
+ ['ULSG.UE.Imp.038','Residência Farmacêutica — Requerimento de Pedido de Formação Externa','00','Impresso'],
+ ['ULSG.UE.Rel.001','Relatório (modelo)','01','Relatório'],
+ ['ULSG.UE.IT.001','Requisição de Livros e Revistas da Biblioteca','01','Instrução de Trabalho']]};
+const PESSOAS=['Pedro Teixeira (Responsável UE)','Anabela Lopes','Isabel Machado','João Farias','Outro (indicar em observações)'];
+const ESTADOS=['Aberto','Em curso','Aguarda verificação de eficácia','Fechado','Anulado'];
+const EFICACIA=['Por verificar','Sim — causas eliminadas','Parcialmente','Não — reabrir análise','Não aplicável'];
+
+const ISHIKAWA={
+ 'Método':['Inexistência ou desconhecimento de processos básicos','Requisitos pouco claros','Défice de planeamento',
+   'Procedimento desatualizado face à decisão tomada','Exceção não formalizada no procedimento','Falta de autonomia para a execução do processo'],
+ 'Mão de obra':['Falta de formação','Equipa pouco envolvida','Postura reativa','Dificuldade na mudança comportamental'],
+ 'Medida':['Falta de monitorização do processo','Indicador inexistente ou inadequado','Falta de confiança no processo'],
+ 'Material':['Impresso ou suporte documental inadequado','Informação de entrada incompleta'],
+ 'Máquina':['Sistema de informação indisponível ou inadequado','Equipamento ou meios insuficientes'],
+ 'Meio ambiente':['Falta de governação','Falta de apoio da liderança','Falta de confiança na liderança',
+   'Falta de direcionamento estratégico','Condições físicas ou organizacionais inadequadas']
+};
+
+/* ---------- armazenamento ---------- */
+let mem=null;
+function load(){ try{ const r=localStorage.getItem(DB_KEY); if(r) return JSON.parse(r); }catch(e){} return mem||{recs:[],hist:[],seq:{}}; }
+function persistRaw(){ mem=state; try{ localStorage.setItem(DB_KEY,JSON.stringify(state)); return true; }
+  catch(e){ toast('Aviso: não foi possível gravar no navegador (dados apenas nesta sessão).'); return false; } }
+function save(){
+  if(!state.backup) state.backup={ultimo:'',pendentes:0};
+  state.backup.pendentes=(state.backup.pendentes||0)+1;
+  persistRaw(); agendarAuto();
+}
+let state=load();
+if(!state.recs) state.recs=[]; if(!state.hist) state.hist=[]; if(!state.seq) state.seq={};
+if(!state.backup) state.backup={ultimo:'',pendentes:0};
+if(!state.catalogo) state.catalogo={
+  proc:CAT_BASE.proc.map(([cod,desig,ver,nat])=>({cod,desig,ver,nat})),
+  doc:CAT_BASE.doc.map(([cod,desig,ver,nat])=>({cod,desig,ver,nat}))};
+function catEntry(cod){ return (state.catalogo.proc.concat(state.catalogo.doc)).find(x=>x.cod===cod); }
+function labCat(cod){ const e=catEntry(cod); return e?`${e.cod} – ${e.desig}`:cod; }
+function labCatV(e){ return `${e.cod} – ${e.desig}${e.ver?` (v. ${e.ver})`:''}`; }
+
+/* ---------- utilitários ---------- */
+const $=s=>document.querySelector(s);
+const $$=s=>Array.from(document.querySelectorAll(s));
+function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function fmtD(d){ if(!d) return '—'; const p=String(d).split('-'); return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:d; }
+function fmtTs(t){const d=new Date(t);return d.toLocaleDateString('pt-PT')+' '+d.toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'});}
+function nowISO(){return new Date().toISOString();}
+function today(){return new Date().toISOString().slice(0,10);}
+function dias(a,b){ if(!a||!b) return null; return Math.round((new Date(b)-new Date(a))/86400000); }
+function uid(){ return (crypto.randomUUID?crypto.randomUUID():'id'+Date.now()+Math.random()); }
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),3000);}
+function codigo(tipo,ano){
+  const p=PREFIXO[tipo]||'REG', y=ano||new Date().getFullYear(), k=p+y;
+  state.seq[k]=(state.seq[k]||0)+1;
+  return `${p} ${state.seq[k]}/${y}`;
+}
+function logH(acao,cod,desc){ state.hist.unshift({ts:nowISO(),acao,cod:cod||'',desc:desc||''}); if(state.hist.length>1500) state.hist.length=1500; }
+function arr(v){ return Array.isArray(v)?v:(v?[v]:[]); }
+</script>
+<script>
+/* ---------- navegação ---------- */
+let view='painel', editId=null, draft=null, detailId=null, errors={};
+const NAV=[['painel','Painel','◈'],['registos','Registos','▤'],['novo','Novo registo','＋'],
+['analise','Análise de causas','⌁'],['catalogo','Processos e documentos','▦'],
+['historico','Histórico','⟲'],['exportar','Exportar / Importar','⇩']];
+function buildNav(){
+  $('#nav').innerHTML=NAV.map(([id,nome,ic])=>{
+    const b=id==='registos'?`<span class="badge">${state.recs.length}</span>`:'';
+    return `<a href="#" class="${view===id?'active':''}" onclick="go('${id}');return false;"><span class="n">${ic}</span>${nome}${b}</a>`;
+  }).join('');
+}
+function go(v,id){
+  if(v==='novo'){ editId=null; draft=novoDraft(); errors={}; }
+  if(v==='editar'){ editId=id; draft=JSON.parse(JSON.stringify(state.recs.find(r=>r.id===id))); errors={}; v='novo'; }
+  if(v==='detalhe'){ detailId=id; }
+  view=v; buildNav(); render(); window.scrollTo(0,0);
+}
+function novoDraft(){
+  return {tipo:'Não conformidade',origem:'',dataOcorrencia:today(),unidade:'Unidade de Ensino',processos:[],documentos:[],processosTexto:'',
+  classificacao:'Menor',especificacao:'',evidencias:'',acaoImediata:'',responsaveis:[],dataInicio:'',dataLimite:'',
+  p1:'',p2:'',p3:'',p4:'',p5:'',ishikawa:{},ishikawaOutro:{},causaRaiz:'',alternativa:'',
+  w_what:'',w_why:'',w_where:'',w_when:'',w_who:'',w_how:'',w_howmuch:'',
+  eficacia:'Por verificar',eficaciaDesc:'',eficaciaEvid:'',dataAvaliacao:'',avaliadores:[],
+  estado:'Aberto',atualizaRiscos:'Não',riscosQuais:'',mudancasSGQ:'Não',mudancasOnde:'',
+  finalizadoPor:'',dataFinal:'',observacoes:''};
+}
+function render(){
+  const m=$('#main'); if(m) m.className=(view==='registos')?'main wide':'main';
+  if(view==='painel') return painel();
+  if(view==='registos') return lista();
+  if(view==='novo') return formulario();
+  if(view==='detalhe') return detalhe();
+  if(view==='analise') return analise();
+  if(view==='catalogo') return catalogo();
+  if(view==='importar') return telaImport();
+  if(view==='historico') return historico();
+  if(view==='exportar') return exportar();
+}
+
+/* ---------- componentes de campo ---------- */
+function fSel(q,lab,key,opts,req,hint,full){
+  return `<div class="field ${full?'full':''} ${errors[key]?'err':''}">
+    <label><span class="q">${q}.</span>${lab}${req?' <span class="req">*</span>':''}</label>
+    <select onchange="setF('${key}',this.value)">${!draft[key]?'<option value=""></option>':''}
+      ${opts.map(o=>`<option ${o===draft[key]?'selected':''}>${esc(o)}</option>`).join('')}</select>
+    ${hint?`<span class="hint">${hint}</span>`:''}${errors[key]?`<span class="errmsg">${errors[key]}</span>`:''}</div>`;
+}
+function fTxt(q,lab,key,req,hint,full,type){
+  return `<div class="field ${full?'full':''} ${errors[key]?'err':''}">
+    <label><span class="q">${q}.</span>${lab}${req?' <span class="req">*</span>':''}</label>
+    <input type="${type||'text'}" value="${esc(draft[key])}" oninput="setF('${key}',this.value)">
+    ${hint?`<span class="hint">${hint}</span>`:''}${errors[key]?`<span class="errmsg">${errors[key]}</span>`:''}</div>`;
+}
+function fArea(q,lab,key,req,hint,full){
+  return `<div class="field ${full!==false?'full':''} ${errors[key]?'err':''}">
+    <label><span class="q">${q}.</span>${lab}${req?' <span class="req">*</span>':''}</label>
+    <textarea oninput="setF('${key}',this.value)">${esc(draft[key])}</textarea>
+    ${hint?`<span class="hint">${hint}</span>`:''}${errors[key]?`<span class="errmsg">${errors[key]}</span>`:''}</div>`;
+}
+function fMulti(q,lab,key,opts,req,hint){
+  const sel=arr(draft[key]);
+  return `<div class="field full ${errors[key]?'err':''}">
+    <label><span class="q">${q}.</span>${lab}${req?' <span class="req">*</span>':''}</label>
+    <div class="boxlist">${opts.map(o=>`<label><input type="checkbox" ${sel.includes(o)?'checked':''}
+      onchange="togMulti('${key}',this.value,this.checked)" value="${esc(o)}">${esc(o)}</label>`).join('')}</div>
+    ${hint?`<span class="hint">${hint}</span>`:''}${errors[key]?`<span class="errmsg">${errors[key]}</span>`:''}</div>`;
+}
+function setF(k,v){ draft[k]=v; if(errors[k]){delete errors[k];} if(['tipo','estado','eficacia','atualizaRiscos','mudancasSGQ'].includes(k)) formulario(); else sidePanel(); }
+function togMulti(k,v,on){ const s=arr(draft[k]); draft[k]= on? s.concat([v]) : s.filter(x=>x!==v); if(errors[k])delete errors[k]; sidePanel(); }
+let catFiltro={};
+function fCat(q,lab,key,tipo,req,hint){
+  const sel=arr(draft[key]), f=(catFiltro[key]||'').toLowerCase();
+  const itens=state.catalogo[tipo].filter(e=>!f||labCatV(e).toLowerCase().includes(f)||(e.nat||'').toLowerCase().includes(f));
+  const nats=[...new Set(itens.map(e=>e.nat||'—'))];
+  const corpo=nats.map(n=>`<div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--petrol);margin:6px 0 2px">${esc(n)}</div>`+
+    itens.filter(e=>(e.nat||'—')===n).map(e=>`<label><input type="checkbox" ${sel.includes(e.cod)?'checked':''}
+      onchange="togMulti('${key}',this.value,this.checked)" value="${esc(e.cod)}">${esc(labCatV(e))}</label>`).join('')).join('');
+  return `<div class="field full ${errors[key]?'err':''}">
+    <label>${q?`<span class="q">${q}.</span>`:''}${lab}${req?' <span class="req">*</span>':''}</label>
+    <div style="display:flex;gap:7px;margin-bottom:6px;flex-wrap:wrap">
+      <input type="text" style="flex:1;min-width:180px" placeholder="Filtrar o catálogo…" value="${esc(catFiltro[key]||'')}"
+        oninput="catFiltro['${key}']=this.value;formulario();setTimeout(()=>{const i=document.querySelector('[data-f=\'${key}\']');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length);}},0)" data-f="${key}">
+      <button type="button" class="btn small" onclick="novoCat('${tipo}','${key}')">＋ Novo ${tipo==='proc'?'processo':'documento'}</button>
+    </div>
+    <div class="boxlist">${corpo||'<span class="hint">Sem resultados para o filtro.</span>'}</div>
+    ${sel.length?`<span class="hint">Selecionados: ${sel.map(c=>esc(labCat(c))).join(' · ')}</span>`:''}
+    ${hint?`<span class="hint">${hint}</span>`:''}${errors[key]?`<span class="errmsg">${errors[key]}</span>`:''}</div>`;
+}
+function novoCat(tipo,key){
+  const cod=prompt(tipo==='proc'
+    ? 'Código do novo processo (por exemplo, ULSG.UE.PO.011):'
+    : 'Código do novo documento (por exemplo, ULSG.UE.Imp.039):');
+  if(!cod||!cod.trim()) return;
+  const c=cod.trim();
+  if(catEntry(c)){ toast('Já existe uma entrada com esse código.'); return; }
+  const desig=prompt('Designação:'); if(!desig||!desig.trim()) return;
+  const ver=(prompt('Versão (pode deixar em branco):')||'').trim();
+  const nat=tipo==='proc'
+    ? (prompt('Natureza (Processo da Qualidade / Procedimento Interno / Procedimento Operativo):','Procedimento Operativo')||'Processo').trim()
+    : (prompt('Natureza (Impresso / Modelo / Regulamento / Política / Manual / Relatório / Instrução de Trabalho):','Impresso')||'Impresso').trim();
+  state.catalogo[tipo].push({cod:c,desig:desig.trim(),ver,nat});
+  state.catalogo[tipo].sort((a,b)=>a.cod.localeCompare(b.cod,'pt'));
+  if(key){ draft[key]=arr(draft[key]).concat([c]); }
+  logH('Catálogo',c,`Nova entrada: ${desig.trim()}`); save();
+  if(key) formulario(); else render();
+  toast('Entrada acrescentada ao catálogo.');
+}
+function togIshi(cat,causa,on){ const s=arr(draft.ishikawa[cat]); draft.ishikawa[cat]= on? s.concat([causa]) : s.filter(x=>x!==causa); if(errors.causas)delete errors.causas; sidePanel(); }
+function setIshiOutro(cat,v){ draft.ishikawaOutro[cat]=v; sidePanel(); }
+</script>
+<script>
+/* ---------- formulário ---------- */
+function formulario(){
+  const isNC=draft.tipo==='Não conformidade'||draft.tipo==='Reclamação';
+  const isElogio=draft.tipo==='Elogio';
+  const sec=(titulo,cl,body)=>`<div class="fsection"><h3>${titulo}${cl?`<span class="cl">${cl}</span>`:''}</h3><div class="fbody">${body}</div></div>`;
+
+  const s1=sec('Descrição do evento','10.2.1',
+    fSel(1,'Tipo','tipo',TIPOS,1)+
+    fSel(2,'Origem','origem',ORIGENS,1)+
+    fTxt(3,'Data da ocorrência','dataOcorrencia',1,'','','date')+
+    fSel(4,'Unidade','unidade',UNIDADES,1)+
+    (isNC?fSel(0,'Classificação','classificacao',CLASSIF,0,'Maior: falha sistémica ou do requisito. Menor: desvio pontual.'):'')+
+    fCat(5,'Processo(s) abrangido(s)','processos','proc',isNC,'Lista conforme ULSG.UE.Imp.009 — Controlo de Documentos do SGQ.')+
+    fCat(0,'Documento(s) associado(s)','documentos','doc',0,'Impressos, modelos, regulamentos e demais documentação do SGQ envolvida.')+
+    fTxt(0,'Outra referência (texto livre)','processosTexto',0,'Use apenas quando a referência não consta do catálogo.','full')+
+    fArea(6,'Especificação — descrição do que ocorreu','especificacao',1,'Factos observados, sem juízo de causa. Indique o requisito ou o documento em causa.')+
+    fArea(7,'Evidências e anexos','evidencias',0,'Identifique os documentos, e-mails ou registos que suportam a ocorrência e onde estão arquivados.'));
+
+  const s2=sec(isElogio?'Encaminhamento':'Correção / ação imediata',isElogio?'':'10.2.1 a)',
+    fArea(8,isElogio?'O que fazer — encaminhamento e divulgação':'O que fazer — correção imediata','acaoImediata',isNC,'Ação para conter o efeito. Distinta da ação corretiva, que elimina a causa.')+
+    fMulti(9,'Quem vai fazer','responsaveis',PESSOAS,isNC)+
+    fTxt(10,'Quando — início','dataInicio',0,'','','date')+
+    fTxt(11,'Até quando — prazo limite','dataLimite',isNC,'','','date'));
+
+  const whys=[1,2,3,4,5].map(i=>`<div class="why"><span class="nb">Porquê ${i}</span>
+    <textarea placeholder="${i===1?'Porque é que a ocorrência aconteceu?':'Porque é que a resposta anterior se verifica?'}"
+      oninput="setF('p${i}',this.value)">${esc(draft['p'+i])}</textarea></div>`).join('');
+  const s3=sec('Análise dos cinco porquês','10.2.1 b)',
+    `<div class="field full ${errors.causas?'err':''}">
+      <span class="hint">Encadeie as respostas: cada «porquê» responde ao anterior. Não é obrigatório chegar ao quinto nível — é obrigatório chegar a uma causa sobre a qual a Unidade possa agir.</span>
+      ${whys}${errors.causas?`<span class="errmsg">${errors.causas}</span>`:''}</div>`);
+
+  const ishi=Object.entries(ISHIKAWA).map(([cat,causas])=>{
+    const sel=arr(draft.ishikawa[cat]);
+    return `<div class="cat"><h4>${cat}</h4><div class="cl">
+      ${causas.map(c=>`<label><input type="checkbox" ${sel.includes(c)?'checked':''}
+        onchange="togIshi('${cat}',this.value,this.checked)" value="${esc(c)}">${esc(c)}</label>`).join('')}
+      <input type="text" placeholder="Outra causa (${cat.toLowerCase()})…" value="${esc(draft.ishikawaOutro[cat]||'')}"
+        oninput="setIshiOutro('${cat}',this.value)"></div></div>`;
+  }).join('');
+  const s4=sec('Diagrama de Ishikawa — causas por categoria','10.2.1 b)',
+    `<div class="field full ${errors.causas?'err':''}"><span class="hint">É obrigatório o preenchimento de pelo menos um dos métodos de análise de causas: cinco porquês ou Ishikawa.</span>
+      <div class="ishi" style="margin-top:8px">${ishi}</div>
+      ${errors.causas?`<span class="errmsg">${errors.causas}</span>`:''}</div>`+
+    fArea(18,'Causa raiz — descrição','causaRaiz',isNC,'Formule a causa de modo a que a sua eliminação impeça a repetição. Se a formulação apontar para uma pessoa e não para o processo, a análise ainda não terminou.')+
+    fArea(19,'Hipótese alternativa de causa','alternativa',0,'Outra explicação plausível que foi ponderada e a razão por que foi afastada.'));
+
+  const s5=sec('Plano de ação corretiva — 5W2H','10.2.1 d)',
+    fArea(20,'What — o que vai ser executado','w_what',isNC)+
+    fArea(21,'Why — porquê','w_why',0,'Deve remeter para a causa raiz identificada.')+
+    fTxt(22,'Where — onde','w_where')+
+    fTxt(23,'When — quando','w_when',0,'Data ou prazo concreto; evite «imediatamente».')+
+    fTxt(24,'Who — responsável pela execução','w_who',isNC)+
+    fArea(25,'How — método de execução','w_how')+
+    fTxt(26,'How much — custo estimado','w_howmuch',0,'Indique «sem custo» quando aplicável.'));
+
+  const s6=sec('Implementação e verificação da eficácia','10.2.1 e) / 9.1.3',
+    fSel(27,'As ações eliminaram as causas da não conformidade?','eficacia',EFICACIA,0)+
+    fTxt(30,'Data da verificação','dataAvaliacao',0,'','','date')+
+    fArea(28,'Verificação da eficácia — descrição','eficaciaDesc',0,'O que foi verificado e com que dados. «Sim» sem evidência não é verificação.')+
+    fArea(29,'Evidência da verificação','eficaciaEvid',0)+
+    fMulti(31,'Quem verificou','avaliadores',PESSOAS));
+
+  const s7=sec('Atualização do Sistema de Gestão da Qualidade','6.1 / 10.3',
+    fSel(32,'Resultado / estado do registo','estado',ESTADOS,1)+
+    fSel(33,'Há necessidade de atualizar riscos e oportunidades?','atualizaRiscos',['Sim','Não'],1)+
+    (draft.atualizaRiscos==='Sim'?fArea(0,'Riscos ou oportunidades a atualizar (ULSG.Imp.148)','riscosQuais',0,'Indique o identificador do risco, por exemplo R06.'):'')+
+    fSel(34,'Há necessidade de realizar mudanças no SGQ?','mudancasSGQ',['Sim','Não'],1)+
+    (draft.mudancasSGQ==='Sim'?fArea(35,'Onde? Processos e documentos a alterar','mudancasOnde',1):'')+
+    fSel(36,'Quem finalizou o presente relatório','finalizadoPor',PESSOAS,0)+
+    fTxt(37,'Data','dataFinal',0,'','','date')+
+    fArea(0,'Observações','observacoes'));
+
+  $('#main').innerHTML=`
+    <div class="page-head"><div>
+      <span class="clause">Cláusula 10.2 · NP EN ISO 9001:2015</span>
+      <h2>${editId?'Editar registo':'Novo registo'}</h2>
+      <div class="sub">Os campos numerados correspondem ao formulário em uso na Unidade de Ensino. Campos assinalados com <span class="req">*</span> são de preenchimento obrigatório.</div>
+    </div>
+    <div class="actions-row">
+      <button class="btn" onclick="go('${editId?'detalhe':'registos'}','${editId||''}')">Cancelar</button>
+      <button class="btn primary" onclick="guardar()">Guardar registo</button>
+    </div></div>
+    <div class="form-wrap">
+      <div>${s1}${s2}${isElogio?'':s3+s4+s5+s6}${s7}</div>
+      <div class="sticky-side" id="side"></div>
+    </div>`;
+  sidePanel();
+}
+
+function contaCausas(){
+  let n=[1,2,3,4,5].filter(i=>(draft['p'+i]||'').trim()).length;
+  Object.values(draft.ishikawa).forEach(v=>n+=arr(v).length);
+  Object.values(draft.ishikawaOutro).forEach(v=>{if((v||'').trim())n++;});
+  return n;
+}
+function avisos(){
+  const a=[];
+  if(draft.dataInicio&&draft.dataLimite&&draft.dataLimite<draft.dataInicio)
+    a.push(['bad','O prazo limite é anterior à data de início da ação.']);
+  const temAcao=draft.tipo==='Não conformidade'||draft.tipo==='Reclamação'||(draft.w_what||'').trim();
+  if(draft.estado==='Fechado'&&temAcao&&draft.eficacia==='Por verificar')
+    a.push(['bad','Não é possível fechar o registo sem verificar a eficácia das ações (cláusula 10.2.1 e).']);
+  if(draft.estado==='Fechado'&&(draft.eficacia||'').startsWith('Sim')&&!(draft.eficaciaDesc||'').trim())
+    a.push(['','Declarou a eficácia como atingida sem descrever o que foi verificado. Em auditoria, uma resposta «sim» sem evidência não é aceite.']);
+  const d=dias(draft.dataLimite,draft.dataAvaliacao);
+  if(d!==null&&d<30&&(draft.eficacia||'').startsWith('Sim'))
+    a.push(['','A eficácia foi verificada '+(d<0?'antes':d+' dia(s) depois')+' do prazo de implementação. A verificação da eficácia pressupõe decorrido tempo suficiente para a causa se poder repetir — recomenda-se um intervalo mínimo de 30 dias.']);
+  if(draft.mudancasSGQ==='Sim'&&draft.atualizaRiscos==='Não')
+    a.push(['info','Vai alterar processos ou documentos do SGQ mas não assinalou a atualização de riscos. Confirme se a matriz de risco (ULSG.Imp.148) continua coerente.']);
+  if(draft.estado!=='Fechado'&&draft.dataLimite&&draft.dataLimite<today())
+    a.push(['','O prazo de implementação está ultrapassado e o registo continua em aberto.']);
+  return a;
+}
+function sidePanel(){
+  const el=$('#side'); if(!el) return;
+  const tot=12, done=['tipo','origem','dataOcorrencia','unidade','especificacao','acaoImediata','dataLimite','causaRaiz','w_what','w_who','estado','finalizadoPor'].filter(k=>(draft[k]||'').toString().trim()).length;
+  const pct=Math.round(done/tot*100);
+  const av=avisos();
+  el.innerHTML=`
+    <div class="side-card"><h4>Identificação</h4>
+      <div class="big">${editId?esc(state.recs.find(r=>r.id===editId).codigo):(PREFIXO[draft.tipo]||'REG')+' …/'+new Date().getFullYear()}</div>
+      <div class="hint" style="font-size:12px;color:var(--ink-soft);margin-top:4px">${editId?'Código atribuído':'Código atribuído ao guardar'}</div>
+    </div>
+    <div class="side-card"><h4>Preenchimento</h4>
+      <div class="prog"><i style="width:${pct}%"></i></div>
+      <div style="font-size:12.5px;color:var(--ink-soft)">${done} de ${tot} campos estruturantes · ${pct}%</div>
+      <div style="font-size:12.5px;color:var(--ink-soft);margin-top:6px">Causas identificadas: <strong>${contaCausas()}</strong></div>
+    </div>
+    ${av.length?`<div class="side-card"><h4>Verificações</h4>${av.map(([t,m])=>`<div class="alertbox ${t}">${m}</div>`).join('')}</div>`:''}
+    <div class="side-card"><h4>Sequência</h4><ul>
+      <li>Descrever o facto, não a causa</li>
+      <li>Correção contém; ação corretiva elimina</li>
+      <li>Causa sobre a qual se pode agir</li>
+      <li>Fechar só após verificar a eficácia</li>
+    </ul></div>`;
+}
+
+function guardar(){
+  errors={};
+  const isNC=draft.tipo==='Não conformidade'||draft.tipo==='Reclamação';
+  const req={tipo:'Indique o tipo de registo.',origem:'Indique a origem.',dataOcorrencia:'Indique a data da ocorrência.',
+    unidade:'Indique a unidade.',especificacao:'Descreva o que ocorreu.',estado:'Indique o estado do registo.'};
+  Object.entries(req).forEach(([k,m])=>{ if(!(draft[k]||'').toString().trim()) errors[k]=m; });
+  if(isNC){
+    if(!arr(draft.processos).length) errors.processos='Indique pelo menos um processo abrangido.';
+    if(!(draft.acaoImediata||'').trim()) errors.acaoImediata='Indique a correção imediata.';
+    if(!arr(draft.responsaveis).length) errors.responsaveis='Indique quem executa a correção.';
+    if(!(draft.dataLimite||'').trim()) errors.dataLimite='Fixe um prazo limite.';
+    if(contaCausas()===0) errors.causas='Preencha pelo menos um dos métodos de análise de causas.';
+    if(!(draft.causaRaiz||'').trim()) errors.causaRaiz='Descreva a causa raiz.';
+    if(!(draft.w_what||'').trim()) errors.w_what='Indique a ação corretiva a executar.';
+    if(!(draft.w_who||'').trim()) errors.w_who='Indique o responsável pela execução.';
+  }
+  if(draft.mudancasSGQ==='Sim'&&!(draft.mudancasOnde||'').trim()) errors.mudancasOnde='Indique os processos ou documentos a alterar.';
+  const temAcao=isNC||(draft.w_what||'').trim();
+  if(draft.estado==='Fechado'&&temAcao&&draft.eficacia==='Por verificar')
+    errors.eficacia='Verifique a eficácia antes de fechar o registo.';
+  if(Object.keys(errors).length){
+    formulario();
+    const f=document.querySelector('.field.err'); if(f&&f.scrollIntoView) f.scrollIntoView({block:'center',behavior:'smooth'});
+    toast('Há campos obrigatórios por preencher.');
+    return;
+  }
+  if(editId){
+    const r=state.recs.find(x=>x.id===editId);
+    Object.assign(r,draft,{atualizadoEm:nowISO()});
+    logH('Atualização',r.codigo,(r.especificacao||'').slice(0,90));
+    save(); toast(`Registo ${r.codigo} atualizado.`); go('detalhe',r.id);
+  }else{
+    const r=Object.assign({id:uid(),codigo:codigo(draft.tipo),criadoEm:nowISO()},draft);
+    state.recs.unshift(r);
+    logH('Criação',r.codigo,(r.especificacao||'').slice(0,90));
+    save(); toast(`Registo ${r.codigo} criado.`); go('detalhe',r.id);
+  }
+}
+</script>
+<script>
+/* ---------- chips de estado ---------- */
+const CH_EST={'Aberto':'bad','Em curso':'info','Aguarda verificação de eficácia':'warn','Fechado':'ok','Anulado':'neutral'};
+const CH_TIPO={'Não conformidade':'bad','Reclamação':'warn','Sugestão de melhoria':'info','Elogio':'ok'};
+const CH_EF={'Por verificar':'warn','Sim — causas eliminadas':'ok','Parcialmente':'warn','Não — reabrir análise':'bad','Não aplicável':'neutral'};
+function chip(v,map){ return v?`<span class="chip ${map[v]||'neutral'}">${esc(v)}</span>`:'—'; }
+function emAtraso(r){ return r.estado!=='Fechado'&&r.estado!=='Anulado'&&r.dataLimite&&r.dataLimite<today(); }
+
+/* ---------- lista ---------- */
+function lista(){
+  $('#main').innerHTML=`
+    <div class="page-head"><div>
+      <span class="clause">Registos</span><h2>Registos da Unidade de Ensino</h2>
+      <div class="sub">Não conformidades, reclamações, sugestões de melhoria e elogios registados, com o respetivo estado de tratamento.</div>
+    </div><div class="actions-row">
+      <button class="btn" onclick="go('exportar')">⇩ Exportar</button>
+      <button class="btn primary" onclick="go('novo')">＋ Novo registo</button>
+    </div></div>
+    <div class="toolbar">
+      <div class="search"><input id="q" placeholder="Pesquisar em ${state.recs.length} registo(s)…" oninput="linhas()"></div>
+      <select class="filter" id="fT" onchange="linhas()"><option value="">Todos os tipos</option>${TIPOS.map(t=>`<option>${t}</option>`).join('')}</select>
+      <select class="filter" id="fE" onchange="linhas()"><option value="">Todos os estados</option>${ESTADOS.map(t=>`<option>${t}</option>`).join('')}</select>
+    </div>
+    <div class="panel"><div class="table-wrap" id="tbl"></div></div>`;
+  linhas();
+}
+function filtra(){
+  const q=($('#q')?.value||'').toLowerCase(), t=$('#fT')?.value||'', e=$('#fE')?.value||'';
+  return state.recs.filter(r=>(!t||r.tipo===t)&&(!e||r.estado===e)&&
+    (!q||JSON.stringify(r).toLowerCase().includes(q)));
+}
+function linhas(){
+  const rs=filtra();
+  if(!rs.length){ $('#tbl').innerHTML=`<div class="empty"><div class="big">Sem registos</div>Crie o primeiro registo com o botão «Novo registo».</div>`; return; }
+  $('#tbl').innerHTML=`<table class="grid"><thead><tr>
+    <th>Código</th><th>Tipo</th><th>Data</th><th>Descrição</th><th>Processo</th><th>Prazo</th><th>Eficácia</th><th>Estado</th><th></th></tr></thead><tbody>
+    ${rs.map(r=>`<tr>
+      <td><span class="code">${esc(r.codigo)}</span></td>
+      <td>${chip(r.tipo,CH_TIPO)}</td>
+      <td>${fmtD(r.dataOcorrencia)}</td>
+      <td class="wrapcell desc"><span class="trunc" title="${esc(r.especificacao)}">${esc(r.especificacao)||'—'}</span></td>
+      <td class="wrapcell proc" title="${esc(arr(r.processos).concat(arr(r.documentos)).map(labCat).join('; '))}">${esc(arr(r.processos).concat(arr(r.documentos)).map(c=>c.replace('ULSG.UE.','').replace('ULSG.','')).join(', '))||'—'}</td>
+      <td>${fmtD(r.dataLimite)}${emAtraso(r)?' <span class="chip bad">em atraso</span>':''}</td>
+      <td>${chip(r.eficacia,CH_EF)}</td>
+      <td>${chip(r.estado,CH_EST)}</td>
+      <td class="row-actions">
+        <button class="btn small ghost" onclick="go('detalhe','${r.id}')">Abrir</button>
+        <button class="btn small ghost" onclick="go('editar','${r.id}')">Editar</button>
+        <button class="btn small danger" onclick="apagar('${r.id}')">Eliminar</button></td></tr>`).join('')}
+  </tbody></table>`;
+}
+function apagar(id){
+  const r=state.recs.find(x=>x.id===id); if(!r) return;
+  if(!confirm(`Eliminar o registo ${r.codigo}?\n\nA eliminação fica assinalada no histórico e não pode ser anulada.`)) return;
+  state.recs=state.recs.filter(x=>x.id!==id);
+  logH('Eliminação',r.codigo,(r.especificacao||'').slice(0,90));
+  save(); render(); buildNav(); toast(`Registo ${r.codigo} eliminado.`);
+}
+
+/* ---------- detalhe ---------- */
+function linhasIshi(r){
+  const out=[];
+  Object.keys(ISHIKAWA).forEach(c=>{
+    const v=arr(r.ishikawa&&r.ishikawa[c]).slice();
+    const o=(r.ishikawaOutro&&r.ishikawaOutro[c]||'').trim(); if(o) v.push(o+' (outra)');
+    if(v.length) out.push([c,v]);
+  });
+  return out;
+}
+function detalhe(){
+  const r=state.recs.find(x=>x.id===detailId);
+  if(!r){ go('registos'); return; }
+  const dl=(t,v)=>`<dt>${t}</dt><dd>${v||'—'}</dd>`;
+  const whys=[1,2,3,4,5].filter(i=>(r['p'+i]||'').trim()).map(i=>dl('Porquê '+i,esc(r['p'+i]))).join('');
+  const ishi=linhasIshi(r).map(([c,v])=>dl(c,esc(v.join(' · ')))).join('');
+  const prazoTxt=fmtD(r.dataLimite)+(emAtraso(r)?' — em atraso':'');
+  const ciclo=dias(r.dataOcorrencia,r.dataFinal);
+  $('#main').innerHTML=`
+    <div class="page-head"><div>
+      <span class="clause">${esc(r.codigo)}</span><h2>${esc(r.tipo)}</h2>
+      <div class="sub">${esc(r.especificacao)}</div>
+      <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">${chip(r.estado,CH_EST)}${chip(r.eficacia,CH_EF)}${r.classificacao&&r.classificacao!=='Não aplicável'?`<span class="chip neutral">Classificação: ${esc(r.classificacao)}</span>`:''}</div>
+    </div><div class="actions-row">
+      <button class="btn" onclick="go('registos')">← Registos</button>
+      <button class="btn" onclick="pdfRegisto('${r.id}')">⎙ Relatório PDF</button>
+      <button class="btn primary" onclick="go('editar','${r.id}')">Editar</button>
+    </div></div>
+    <div class="panel detail"><div class="panel-body">
+      <h3>Descrição do evento</h3><dl>
+        ${dl('Origem',esc(r.origem))}${dl('Data da ocorrência',fmtD(r.dataOcorrencia))}
+        ${dl('Unidade',esc(r.unidade))}${dl('Processo(s)',esc(arr(r.processos).map(labCat).join('\n')))}
+        ${arr(r.documentos).length?dl('Documento(s) associado(s)',esc(arr(r.documentos).map(labCat).join('\n'))):''}
+        ${r.processosTexto?dl('Outra referência',esc(r.processosTexto)):''}
+        ${dl('Especificação',esc(r.especificacao))}${dl('Evidências e anexos',esc(r.evidencias))}</dl>
+      <h3>Correção / ação imediata</h3><dl>
+        ${dl('O que fazer',esc(r.acaoImediata))}${dl('Quem vai fazer',esc(arr(r.responsaveis).join('; ')))}
+        ${dl('Início',fmtD(r.dataInicio))}${dl('Prazo limite',prazoTxt)}</dl>
+      <h3>Análise de causas</h3><dl>
+        ${whys||''}${ishi||''}
+        ${dl('Causa raiz',esc(r.causaRaiz))}${dl('Hipótese alternativa',esc(r.alternativa))}</dl>
+      <h3>Plano de ação corretiva (5W2H)</h3><dl>
+        ${dl('What — o quê',esc(r.w_what))}${dl('Why — porquê',esc(r.w_why))}${dl('Where — onde',esc(r.w_where))}
+        ${dl('When — quando',esc(r.w_when))}${dl('Who — quem',esc(r.w_who))}${dl('How — como',esc(r.w_how))}
+        ${dl('How much — custo',esc(r.w_howmuch))}</dl>
+      <h3>Verificação da eficácia</h3><dl>
+        ${dl('Resultado',esc(r.eficacia))}${dl('Data da verificação',fmtD(r.dataAvaliacao))}
+        ${dl('Descrição',esc(r.eficaciaDesc))}${dl('Evidência',esc(r.eficaciaEvid))}
+        ${dl('Quem verificou',esc(arr(r.avaliadores).join('; ')))}</dl>
+      <h3>Atualização do SGQ</h3><dl>
+        ${dl('Atualizar riscos e oportunidades',esc(r.atualizaRiscos)+(r.riscosQuais?' — '+esc(r.riscosQuais):''))}
+        ${dl('Mudanças no SGQ',esc(r.mudancasSGQ)+(r.mudancasOnde?' — '+esc(r.mudancasOnde):''))}
+        ${dl('Finalizado por',esc(r.finalizadoPor))}${dl('Data',fmtD(r.dataFinal))}
+        ${ciclo!==null?dl('Tempo de tratamento',ciclo+' dia(s) entre a ocorrência e o encerramento'):''}
+        ${dl('Observações',esc(r.observacoes))}</dl>
+    </div></div>`;
+}
+
+/* ---------- histórico ---------- */
+const CH_ACT={'Criação':'ok','Atualização':'info','Eliminação':'bad','Exportação':'neutral','Importação':'warn'};
+function historico(){
+  $('#main').innerHTML=`
+    <div class="page-head"><div><span class="clause">Rastreabilidade</span><h2>Histórico de atividade</h2>
+      <div class="sub">Registo cronológico das operações efetuadas. Constitui evidência de rastreabilidade para efeitos de auditoria.</div></div></div>
+    <div class="toolbar"><div class="search"><input id="hq" placeholder="Pesquisar no histórico…" oninput="hLinhas()"></div></div>
+    <div class="panel"><div class="panel-body" id="hl"></div></div>`;
+  hLinhas();
+}
+function hLinhas(){
+  const q=($('#hq')?.value||'').toLowerCase();
+  const it=state.hist.filter(h=>!q||(h.cod+' '+h.desc+' '+h.acao).toLowerCase().includes(q));
+  $('#hl').innerHTML=it.slice(0,300).map(h=>`<div class="hist-item">
+    <span class="ts">${fmtTs(h.ts)}</span>
+    <span class="act"><span class="chip ${CH_ACT[h.acao]||'neutral'}">${esc(h.acao)}</span></span>
+    <span>${h.cod?`<span class="code">${esc(h.cod)}</span> — `:''}${esc(h.desc)}</span></div>`).join('')
+    ||'<div class="empty">Sem entradas.</div>';
+}
+</script>
+<script>
+/* ---------- painel ---------- */
+function metricas(){
+  const R=state.recs;
+  const abertos=R.filter(r=>r.estado!=='Fechado'&&r.estado!=='Anulado');
+  const atraso=R.filter(emAtraso);
+  const porVerificar=R.filter(r=>r.estado!=='Anulado'&&r.tipo!=='Elogio'&&r.eficacia==='Por verificar'&&(r.w_what||'').trim());
+  const nc=R.filter(r=>r.tipo==='Não conformidade');
+  const fechados=R.filter(r=>r.estado==='Fechado'&&r.dataOcorrencia&&r.dataFinal);
+  const tmed=fechados.length?Math.round(fechados.reduce((s,r)=>s+dias(r.dataOcorrencia,r.dataFinal),0)/fechados.length):null;
+  const reabrir=R.filter(r=>r.eficacia==='Não — reabrir análise').length;
+  return {tot:R.length,abertos:abertos.length,atraso:atraso.length,porVerificar:porVerificar.length,nc:nc.length,tmed,reabrir};
+}
+function barras(mapa,total){
+  const max=Math.max(1,...Object.values(mapa));
+  return Object.entries(mapa).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]).map(([k,v])=>
+    `<div class="bar"><span class="lab">${esc(k)}</span><span class="track"><i style="width:${v/max*100}%"></i></span><span class="val">${v}</span></div>`).join('')
+    ||'<div style="color:var(--ink-soft);font-size:13px">Sem dados.</div>';
+}
+function painel(){
+  const m=metricas();
+  const porTipo={}; TIPOS.forEach(t=>porTipo[t]=state.recs.filter(r=>r.tipo===t).length);
+  const porOrigem={}; state.recs.forEach(r=>{ if(r.origem) porOrigem[r.origem]=(porOrigem[r.origem]||0)+1; });
+  const cards=[
+    {v:m.abertos,k:'Registos em aberto',d:'por encerrar',c:m.abertos?'warn':'good',go:'registos'},
+    {v:m.atraso,k:'Prazos ultrapassados',d:'ação não concluída no prazo',c:m.atraso?'alert':'good',go:'registos'},
+    {v:m.porVerificar,k:'Eficácia por verificar',d:'ações implementadas sem verificação',c:m.porVerificar?'warn':'good',go:'registos'},
+    {v:m.reabrir,k:'A reabrir',d:'ações sem eficácia demonstrada',c:m.reabrir?'alert':'good',go:'registos'},
+    {v:m.nc,k:'Não conformidades',d:'do total de registos',c:'',go:'registos'},
+    {v:m.tmed===null?'—':m.tmed+' d',k:'Tempo médio de tratamento',d:'da ocorrência ao encerramento',c:'',go:'analise'}
+  ].map(c=>`<div class="card ${c.c}" onclick="go('${c.go}')"><div class="k">${c.k}</div><div class="v">${c.v}</div><div class="d">${c.d}</div></div>`).join('');
+  const recentes=state.recs.slice(0,5).map(r=>`<tr>
+    <td><span class="code">${esc(r.codigo)}</span></td><td>${chip(r.tipo,CH_TIPO)}</td>
+    <td><span class="trunc" title="${esc(r.especificacao)}">${esc(r.especificacao)}</span></td>
+    <td>${chip(r.estado,CH_EST)}</td>
+    <td class="row-actions"><button class="btn small ghost" onclick="go('detalhe','${r.id}')">Abrir</button></td></tr>`).join('');
+  const seed=state.recs.length===0?`<div class="panel"><div class="panel-body" style="display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap">
+      <div><strong>Primeira utilização</strong><br><span style="color:var(--ink-soft);font-size:13px">Pode carregar o registo NC 1/2026 (cartão de estágio dos alunos da UBI) já migrado do formulário, para verificar o funcionamento da aplicação.</span></div>
+      <button class="btn" onclick="seedDemo()">Carregar NC 1/2026</button></div></div>`:'';
+  $('#main').innerHTML=`
+    <div class="page-head"><div><span class="clause">Painel</span><h2>Estado do tratamento de ocorrências</h2>
+      <div class="sub">Síntese para acompanhamento corrente e para as entradas da revisão pela gestão (cláusula 9.3).</div></div>
+      <div class="actions-row"><button class="btn primary" onclick="go('novo')">＋ Novo registo</button></div></div>
+    ${seed}
+    ${bannerBackup()}
+    <div class="cards">${cards}</div>
+    <div class="panel"><div class="panel-head"><h3>Distribuição por tipo</h3></div><div class="panel-body">${barras(porTipo)}</div></div>
+    <div class="panel"><div class="panel-head"><h3>Distribuição por origem</h3></div><div class="panel-body">${barras(porOrigem)}</div></div>
+    <div class="panel"><div class="panel-head"><h3>Registos recentes</h3>
+      <button class="btn small ghost" onclick="go('registos')">Ver todos</button></div>
+      ${recentes?`<div class="table-wrap"><table class="grid"><tbody>${recentes}</tbody></table></div>`:'<div class="empty">Ainda sem registos.</div>'}</div>`;
+}
+
+/* ---------- análise de causas ---------- */
+function analise(){
+  const cat={}, causa={};
+  Object.keys(ISHIKAWA).forEach(c=>cat[c]=0);
+  state.recs.forEach(r=>{
+    linhasIshi(r).forEach(([c,v])=>{ cat[c]=(cat[c]||0)+v.length; v.forEach(x=>causa[x]=(causa[x]||0)+1); });
+  });
+  const porProc={};
+  state.recs.forEach(r=>arr(r.processos).forEach(c=>{const k=labCat(c);porProc[k]=(porProc[k]||0)+1;}));
+  const semCausa=state.recs.filter(r=>(r.tipo==='Não conformidade'||r.tipo==='Reclamação')&&!(r.causaRaiz||'').trim()).length;
+  const semEf=state.recs.filter(r=>r.estado==='Fechado'&&(!(r.eficaciaDesc||'').trim())).length;
+  $('#main').innerHTML=`
+    <div class="page-head"><div><span class="clause">Cláusula 9.1.3</span><h2>Análise de causas e de tendências</h2>
+      <div class="sub">Agregação das causas identificadas em todos os registos. Causas recorrentes indicam falha sistémica: tratam-se no processo, não em cada ocorrência isolada.</div></div></div>
+    <div class="panel"><div class="panel-head"><h3>Causas por categoria (Ishikawa)</h3></div><div class="panel-body">${barras(cat)}</div></div>
+    <div class="panel"><div class="panel-head"><h3>Causas mais frequentes</h3></div><div class="panel-body">${barras(causa)}</div></div>
+    <div class="panel"><div class="panel-head"><h3>Ocorrências por processo</h3></div><div class="panel-body">${barras(porProc)}</div></div>
+    <div class="panel"><div class="panel-head"><h3>Qualidade do tratamento</h3></div><div class="panel-body">
+      <div class="bar"><span class="lab">Registos sem causa raiz descrita</span><span class="track"><i style="width:${state.recs.length?semCausa/state.recs.length*100:0}%;background:var(--bad)"></i></span><span class="val">${semCausa}</span></div>
+      <div class="bar"><span class="lab">Fechados sem descrição da verificação</span><span class="track"><i style="width:${state.recs.length?semEf/state.recs.length*100:0}%;background:var(--warn)"></i></span><span class="val">${semEf}</span></div>
+    </div></div>`;
+}
+
+/* ---------- reposição de dados ---------- */
+function recalcSeq(){
+  const seq={};
+  state.recs.forEach(r=>{
+    const m=String(r.codigo||'').match(/^([A-Z]+)\s*(\d+)\/(\d{4})$/);
+    if(!m) return;
+    const k=m[1]+m[3], n=parseInt(m[2],10);
+    if(!seq[k]||n>seq[k]) seq[k]=n;
+  });
+  state.seq=seq;
+}
+function reiniciarNumeracao(){
+  const antes=JSON.stringify(state.seq);
+  recalcSeq();
+  save();
+  const depois=Object.entries(state.seq).map(([k,v])=>`${k}: ${v}`).join(' · ')||'tudo a zero';
+  logH('Reposição','','Numeração recalculada a partir dos registos existentes');
+  save(); render();
+  toast(antes===JSON.stringify(state.seq)?'A numeração já estava correta.':`Numeração recalculada — ${depois}.`);
+}
+function apagarRegistos(){
+  if(!state.recs.length){ toast('Já não existem registos.'); return; }
+  if(!confirm(`Apagar os ${state.recs.length} registo(s) e reiniciar a numeração?\n\nO catálogo de processos e documentos é mantido.\nExporte primeiro uma cópia de segurança, se ainda não o fez.`)) return;
+  if(!confirm('Confirma? Esta operação não pode ser anulada.')) return;
+  const n=state.recs.length;
+  state.recs=[]; state.seq={};
+  logH('Reposição','',`${n} registo(s) apagados; numeração reiniciada`);
+  save(); buildNav(); go('painel'); toast(`${n} registo(s) apagados. A numeração recomeça em 1.`);
+}
+function reporTudo(){
+  if(!confirm('Repor a aplicação no estado inicial?\n\nApaga todos os registos, o histórico e as alterações ao catálogo de processos e documentos.\nExporte primeiro uma cópia de segurança, se ainda não o fez.')) return;
+  if(!confirm('Confirma? Perde-se tudo o que está guardado neste navegador.')) return;
+  try{ localStorage.removeItem(DB_KEY); }catch(e){}
+  mem=null;
+  state={recs:[],hist:[],seq:{},catalogo:{
+    proc:CAT_BASE.proc.map(([cod,desig,ver,nat])=>({cod,desig,ver,nat})),
+    doc:CAT_BASE.doc.map(([cod,desig,ver,nat])=>({cod,desig,ver,nat}))}};
+  logH('Reposição','','Aplicação reposta no estado inicial');
+  save(); buildNav(); go('painel'); toast('Aplicação reposta. Tudo recomeça do zero.');
+}
+
+/* ---------- exportação ---------- */
+function download(nome,cont,mime){
+  const b=new Blob([cont],{type:mime}), a=document.createElement('a');
+  a.href=URL.createObjectURL(b); a.download=nome; document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},400);
+}
+const stamp=()=>new Date().toISOString().slice(0,10);
+function exportar(){
+  $('#main').innerHTML=`
+    <div class="page-head"><div><span class="clause">Dados</span><h2>Exportar e importar</h2>
+      <div class="sub">Cópia de segurança, tratamento dos dados em folha de cálculo e relatórios para arquivo documental.</div></div></div>
+    <div class="export-grid">
+      <div class="export-card"><span class="fmt">.json</span><h4>Cópia de segurança completa</h4>
+        <p>Todos os registos, sequências de numeração e histórico num ficheiro estruturado. Formato indicado para salvaguarda e para transferir os dados entre computadores.</p>
+        <button class="btn primary" onclick="expJSON()">Exportar JSON</button></div>
+      <div class="export-card"><span class="fmt">.xls</span><h4>Folha de cálculo</h4>
+        <p>Livro com uma folha de registos (todos os campos), uma folha de causas por registo e o histórico de atividade. Abre no Excel e no LibreOffice.</p>
+        <button class="btn primary" onclick="expXLS()">Exportar XLS</button></div>
+      <div class="export-card"><span class="fmt">.pdf</span><h4>Relatório consolidado</h4>
+        <p>Relatório de todos os registos com a síntese do painel, para apresentação na revisão pela gestão. Gerado pela caixa de impressão — escolha «Guardar como PDF».</p>
+        <button class="btn primary" onclick="pdfTodos()">Gerar relatório</button></div>
+      <div class="export-card"><span class="fmt">.xlsx .csv</span><h4>Importar lista do Microsoft Forms</h4>
+        <p>Importa diretamente a folha exportada do formulário (<em>.xlsx</em> ou <em>.csv</em>), com correspondência automática das colunas. Os registos são acrescentados aos existentes, sem apagar nada.</p>
+        <button class="btn primary" onclick="document.getElementById('importXls').click()">Importar Excel / CSV</button></div>
+      <div class="export-card"><span class="fmt">.json</span><h4>Importar / repor</h4>
+        <p>Repõe o estado da aplicação a partir de uma cópia de segurança anterior. <strong>Substitui todos os dados atuais.</strong></p>
+        <button class="btn" onclick="document.getElementById('importFile').click()">Importar JSON</button></div>
+    </div>
+    <div class="panel" style="margin-top:22px"><div class="panel-head"><h3>Onde ficam os dados, e o que os apaga</h3></div>
+      <div class="panel-body" style="font-size:13px;color:var(--ink-soft)">
+        <p style="margin-bottom:10px">Os registos ficam no armazenamento local <strong>do navegador</strong>, e não dentro do ficheiro HTML.
+        Abrir uma cópia nova do ficheiro no mesmo navegador mostra sempre os mesmos dados; trocar de navegador, de computador
+        ou usar uma janela anónima mostra uma aplicação vazia.
+        Neste momento estão guardados <strong>${state.recs.length} registo(s)</strong> e <strong>${state.hist.length} entrada(s)</strong> de histórico.</p>
+        <p style="margin-bottom:6px"><strong>Apagam os dados:</strong></p>
+        <ul style="margin:0 0 10px 18px">
+          <li>Limpar «cookies e outros dados de sites» nas definições de privacidade do navegador — é a causa mais provável, porque vem pré-selecionada na caixa de limpeza do Chrome e do Edge.</li>
+          <li>A opção «eliminar dados dos sites ao fechar o navegador», se estiver ativa.</li>
+          <li>Reinstalar o navegador, repor o perfil, ou uma reimagem do posto feita pelos serviços informáticos.</li>
+          <li>No Firefox, o armazenamento de páginas abertas a partir do disco é isolado por ficheiro, pelo que mudar o ficheiro de pasta ou de nome pode dar uma aplicação vazia.</li>
+        </ul>
+        <p><strong>Não apagam os dados:</strong> limpar apenas o histórico de navegação, fechar o separador ou o navegador,
+        reiniciar o computador, nem descarregar de novo o ficheiro HTML.</p>
+      </div></div>
+    ${painelAuto()}
+    <div class="panel"><div class="panel-head"><h3>Reposição</h3></div>
+      <div class="panel-body">
+        <div class="alertbox">Exporte uma cópia de segurança JSON antes de qualquer reposição. Estas operações não podem ser anuladas.</div>
+        <div class="table-wrap"><table class="grid"><tbody>
+          <tr><td><strong>Reiniciar a numeração</strong><br><span style="color:var(--ink-soft);font-size:12.5px">Recalcula os contadores a partir dos registos existentes. Use quando a numeração ficou adiantada depois de apagar registos.</span></td>
+            <td class="row-actions"><button class="btn small" onclick="reiniciarNumeracao()">Reiniciar numeração</button></td></tr>
+          <tr><td><strong>Apagar todos os registos</strong><br><span style="color:var(--ink-soft);font-size:12.5px">Remove os registos e repõe a numeração em 1. Mantém o catálogo de processos e documentos e o histórico.</span></td>
+            <td class="row-actions"><button class="btn small danger" onclick="apagarRegistos()">Apagar registos</button></td></tr>
+          <tr><td><strong>Repor a aplicação de origem</strong><br><span style="color:var(--ink-soft);font-size:12.5px">Apaga registos, histórico e alterações ao catálogo. Equivale a abrir a aplicação pela primeira vez.</span></td>
+            <td class="row-actions"><button class="btn small danger" onclick="reporTudo()">Repor tudo</button></td></tr>
+        </tbody></table></div>
+      </div></div>`;
+}
+function expJSON(){
+  state.backup={ultimo:nowISO(),pendentes:0}; persistRaw();
+  const p={aplicacao:'ULSG · UE — Análise de NC, Reclamações, SM e Elogios',versao:1,exportadoEm:nowISO(),dados:state};
+  download(`ulsg-ue-nc-${stamp()}.json`,JSON.stringify(p,null,2),'application/json');
+  logH('Exportação','','Cópia de segurança JSON');
+  state.backup={ultimo:nowISO(),pendentes:0}; persistRaw();
+  toast('Exportação JSON concluída.');
+}
+$('#importFile').addEventListener('change',function(){
+  const f=this.files[0]; if(!f) return; const rd=new FileReader();
+  rd.onload=()=>{ try{
+      const o=JSON.parse(rd.result), d=o.dados||o;
+      if(!d.recs) throw 0;
+      if(!confirm('A importação substitui TODOS os dados atuais. Continuar?')) return;
+      state=d; if(!state.hist)state.hist=[]; if(!state.seq)state.seq={};
+      logH('Importação','',`Ficheiro «${f.name}»`); save(); buildNav(); go('painel'); toast('Dados importados.');
+    }catch(e){ alert('O ficheiro não é uma cópia de segurança válida desta aplicação.'); } };
+  rd.readAsText(f); this.value='';
+});
+
+/* ---------- XLS ---------- */
+function xe(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function cel(v){
+  const s=String(v==null?'':v).trim();
+  return /^-?\d+([.,]\d+)?$/.test(s)&&s!==''
+    ? `<Cell><Data ss:Type="Number">${s.replace(',','.')}</Data></Cell>`
+    : `<Cell><Data ss:Type="String">${xe(v)}</Data></Cell>`;
+}
+function expXLS(){
+  const H1=['Código','Tipo','Classificação','Origem','Data da ocorrência','Unidade','Processos','Documentos associados','Outra referência','Especificação','Evidências',
+  'Correção imediata','Responsáveis','Início','Prazo limite','Porquê 1','Porquê 2','Porquê 3','Porquê 4','Porquê 5',
+  'Causa raiz','Hipótese alternativa','What','Why','Where','When','Who','How','How much',
+  'Eficácia','Data da verificação','Descrição da verificação','Evidência da verificação','Quem verificou',
+  'Estado','Atualizar riscos','Riscos','Mudanças no SGQ','Onde','Finalizado por','Data','Observações','Dias de tratamento','Em atraso'];
+  const rows=state.recs.map(r=>{
+    const v=[r.codigo,r.tipo,r.classificacao,r.origem,fmtD(r.dataOcorrencia),r.unidade,arr(r.processos).map(labCat).join(' | '),
+    arr(r.documentos).map(labCat).join(' | '),r.processosTexto,r.especificacao,r.evidencias,r.acaoImediata,arr(r.responsaveis).join('; '),fmtD(r.dataInicio),fmtD(r.dataLimite),
+    r.p1,r.p2,r.p3,r.p4,r.p5,r.causaRaiz,r.alternativa,r.w_what,r.w_why,r.w_where,r.w_when,r.w_who,r.w_how,r.w_howmuch,
+    r.eficacia,fmtD(r.dataAvaliacao),r.eficaciaDesc,r.eficaciaEvid,arr(r.avaliadores).join('; '),
+    r.estado,r.atualizaRiscos,r.riscosQuais,r.mudancasSGQ,r.mudancasOnde,r.finalizadoPor,fmtD(r.dataFinal),r.observacoes,
+    (dias(r.dataOcorrencia,r.dataFinal)??''),emAtraso(r)?'Sim':'Não'];
+    return `<Row>${v.map(cel).join('')}</Row>`;
+  }).join('');
+  const hc=`<Row>${['Código','Categoria','Causa'].map(h=>cel(h)).join('')}</Row>`;
+  const rc=state.recs.flatMap(r=>linhasIshi(r).flatMap(([c,vs])=>vs.map(x=>`<Row>${[r.codigo,c,x].map(cel).join('')}</Row>`))).join('');
+  const hh=`<Row>${['Data/Hora','Ação','Código','Descrição'].map(h=>cel(h)).join('')}</Row>`;
+  const rh=state.hist.map(h=>`<Row>${[fmtTs(h.ts),h.acao,h.cod,h.desc].map(cel).join('')}</Row>`).join('');
+  const xml=`<?xml version="1.0" encoding="UTF-8"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
+<Worksheet ss:Name="Registos"><Table><Row>${H1.map(cel).join('')}</Row>${rows}</Table></Worksheet>
+<Worksheet ss:Name="Causas"><Table>${hc}${rc}</Table></Worksheet>
+<Worksheet ss:Name="Histórico"><Table>${hh}${rh}</Table></Worksheet></Workbook>`;
+  download(`ulsg-ue-nc-${stamp()}.xls`,xml,'application/vnd.ms-excel');
+  logH('Exportação','','Livro XLS'); save(); toast('Exportação XLS concluída.');
+}
+</script>
+<script>
+/* ---------- PDF ---------- */
+const PDFCSS=`body{font-family:"Segoe UI",system-ui,sans-serif;color:#152A2E;margin:30px;font-size:11.5px}
+h1{font-size:18px;margin-bottom:2px} .meta{color:#4B6167;font-size:10.5px;margin-bottom:16px}
+h2{font-size:13px;margin:18px 0 6px;border-bottom:2px solid #0E4A54;padding-bottom:3px;page-break-after:avoid}
+h3{font-size:11.5px;margin:12px 0 4px;color:#0E4A54;page-break-after:avoid}
+table{width:100%;border-collapse:collapse;font-size:10.5px;margin-bottom:8px}
+th{background:#F0F4F3;text-align:left;padding:5px 7px;border:1px solid #CDD7D5;font-size:9.5px;text-transform:uppercase;letter-spacing:.04em}
+td{padding:5px 7px;border:1px solid #CDD7D5;vertical-align:top}
+tr{page-break-inside:avoid}
+dl{display:grid;grid-template-columns:200px 1fr;gap:1px;background:#CDD7D5;border:1px solid #CDD7D5;margin-bottom:8px}
+dt{background:#F6F8F7;padding:4px 7px;font-weight:600;font-size:10px}
+dd{background:#fff;padding:4px 7px;font-size:10.5px;white-space:pre-wrap}
+.reg{page-break-after:always} .reg:last-child{page-break-after:auto}
+.kpi{max-width:420px} @page{margin:15mm}`;
+function abrirPDF(titulo,corpo){
+  const w=window.open('','_blank');
+  if(!w){ toast('O navegador bloqueou a janela. Autorize as janelas para gerar o relatório.'); return; }
+  w.document.write(`<!DOCTYPE html><html lang="pt-PT"><head><meta charset="UTF-8"><title>${titulo}</title>
+    <style>${PDFCSS}</style></head><body>${corpo}
+    <scr`+`ipt>window.onload=()=>setTimeout(()=>window.print(),350);</scr`+`ipt></body></html>`);
+  w.document.close();
+}
+function blocoRegisto(r){
+  const d=(t,v)=>`<dt>${t}</dt><dd>${esc(v)||'—'}</dd>`;
+  const whys=[1,2,3,4,5].filter(i=>(r['p'+i]||'').trim()).map(i=>d('Porquê '+i,r['p'+i])).join('');
+  const ishi=linhasIshi(r).map(([c,v])=>d(c,v.join(' · '))).join('');
+  return `<div class="reg"><h2>${esc(r.codigo)} — ${esc(r.tipo)}</h2>
+    <h3>Descrição do evento</h3><dl>
+      ${d('Origem',r.origem)}${d('Data da ocorrência',fmtD(r.dataOcorrencia))}${d('Unidade',r.unidade)}
+      ${r.classificacao&&r.classificacao!=='Não aplicável'?d('Classificação',r.classificacao):''}
+      ${d('Processo(s)',arr(r.processos).map(labCat).join('\n'))}
+      ${arr(r.documentos).length?d('Documento(s) associado(s)',arr(r.documentos).map(labCat).join('\n')):''}
+      ${r.processosTexto?d('Outra referência',r.processosTexto):''}
+      ${d('Especificação',r.especificacao)}${d('Evidências',r.evidencias)}</dl>
+    <h3>Correção / ação imediata</h3><dl>
+      ${d('O que fazer',r.acaoImediata)}${d('Quem vai fazer',arr(r.responsaveis).join('; '))}
+      ${d('Início',fmtD(r.dataInicio))}${d('Prazo limite',fmtD(r.dataLimite))}</dl>
+    ${(whys||ishi||r.causaRaiz)?`<h3>Análise de causas</h3><dl>${whys}${ishi}${d('Causa raiz',r.causaRaiz)}${r.alternativa?d('Hipótese alternativa',r.alternativa):''}</dl>`:''}
+    ${(r.w_what||r.w_who)?`<h3>Plano de ação corretiva (5W2H)</h3><dl>
+      ${d('What',r.w_what)}${d('Why',r.w_why)}${d('Where',r.w_where)}${d('When',r.w_when)}
+      ${d('Who',r.w_who)}${d('How',r.w_how)}${d('How much',r.w_howmuch)}</dl>`:''}
+    <h3>Verificação da eficácia</h3><dl>
+      ${d('Resultado',r.eficacia)}${d('Data da verificação',fmtD(r.dataAvaliacao))}
+      ${d('Descrição',r.eficaciaDesc)}${d('Evidência',r.eficaciaEvid)}${d('Quem verificou',arr(r.avaliadores).join('; '))}</dl>
+    <h3>Atualização do SGQ</h3><dl>
+      ${d('Estado',r.estado)}
+      ${d('Atualizar riscos e oportunidades',r.atualizaRiscos+(r.riscosQuais?' — '+r.riscosQuais:''))}
+      ${d('Mudanças no SGQ',r.mudancasSGQ+(r.mudancasOnde?' — '+r.mudancasOnde:''))}
+      ${d('Finalizado por',r.finalizadoPor)}${d('Data',fmtD(r.dataFinal))}${r.observacoes?d('Observações',r.observacoes):''}</dl></div>`;
+}
+function cab(sub){
+  return `<h1>Análise de Não Conformidades, Reclamações, Sugestões de Melhoria e Elogios</h1>
+  <div class="meta">Unidade Local de Saúde da Guarda, E.P.E. — Unidade de Ensino · NP EN ISO 9001:2015, cláusula 10.2<br>
+  ${sub} · Emitido em ${new Date().toLocaleDateString('pt-PT')} às ${new Date().toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'})}</div>`;
+}
+function pdfRegisto(id){
+  const r=state.recs.find(x=>x.id===id); if(!r) return;
+  abrirPDF(`${r.codigo} — ${stamp()}`, cab('Relatório individual')+blocoRegisto(r));
+  logH('Exportação',r.codigo,'Relatório PDF individual'); save();
+}
+function pdfTodos(){
+  const m=metricas();
+  const kpi=[['Total de registos',m.tot],['Em aberto',m.abertos],['Prazos ultrapassados',m.atraso],
+  ['Eficácia por verificar',m.porVerificar],['Não conformidades',m.nc],
+  ['Tempo médio de tratamento',m.tmed===null?'—':m.tmed+' dias']]
+  .map(([k,v])=>`<tr><td>${k}</td><td style="text-align:right;font-weight:700">${v}</td></tr>`).join('');
+  const tab=state.recs.map(r=>`<tr><td>${esc(r.codigo)}</td><td>${esc(r.tipo)}</td><td>${fmtD(r.dataOcorrencia)}</td>
+    <td>${esc(r.especificacao)}</td><td>${fmtD(r.dataLimite)}</td><td>${esc(r.eficacia)}</td><td>${esc(r.estado)}</td></tr>`).join('')
+    ||'<tr><td colspan="7" style="color:#777">Sem registos.</td></tr>';
+  const corpo=cab('Relatório consolidado')+
+    `<h2>Síntese</h2><table class="kpi"><tbody>${kpi}</tbody></table>
+     <h2>Registos</h2><table><thead><tr><th>Código</th><th>Tipo</th><th>Data</th><th>Descrição</th><th>Prazo</th><th>Eficácia</th><th>Estado</th></tr></thead>
+     <tbody>${tab}</tbody></table>
+     <div style="page-break-after:always"></div>`+
+    state.recs.map(blocoRegisto).join('');
+  abrirPDF(`Relatorio-NC-${stamp()}`,corpo);
+  logH('Exportação','','Relatório consolidado PDF'); save();
+}
+
+/* ---------- registo migrado do formulário ---------- */
+function seedDemo(){
+  const r={id:uid(),codigo:codigo('Não conformidade'),criadoEm:nowISO(),
+    tipo:'Não conformidade',origem:'Auditorias internas (9.2.2)',dataOcorrencia:'2026-04-14',
+    unidade:'Unidade de Ensino e Biblioteca',classificacao:'Menor',
+    processos:['ULSG.UE.PO.001','ULSG.UE.PQ.002'],documentos:[],processosTexto:'',
+    especificacao:'Inconsistência relativamente ao cartão de identificação para os alunos da Universidade da Beira Interior: o procedimento documentado não reflete o método aprovado para esta instituição.',
+    evidencias:'Relatório da auditoria interna de 14/04/2026.',
+    acaoImediata:'Proceder às alterações nos procedimentos ULSG.UE.PO.001 e ULSG.UE.PQ.002.',
+    responsaveis:['Pedro Teixeira (Responsável UE)','Anabela Lopes','Isabel Machado','João Farias'],
+    dataInicio:'2026-05-18',dataLimite:'2026-05-18',
+    p1:'Porque foi deliberado pelo Conselho de Administração um método diferente, mas a documentação não foi atualizada em conformidade.',
+    p2:'Porque, tratando-se de uma exceção, não se corrigiu o procedimento nem se formalizou essa exceção.',
+    p3:'Porque a situação ocorreu no início da introdução dos cartões e não lhe foi dada a devida relevância.',
+    p4:'Porque foi entendida como um caso isolado de exceção, sem impacto no processo.',
+    p5:'Porque não existe, no circuito de controlo documental, uma verificação sistemática da coerência entre as deliberações do CA e os procedimentos em vigor.',
+    ishikawa:{'Método':['Procedimento desatualizado face à decisão tomada','Exceção não formalizada no procedimento'],
+      'Medida':['Falta de monitorização do processo'],'Meio ambiente':['Falta de governação']},
+    ishikawaOutro:{},
+    causaRaiz:'Ausência de um mecanismo de verificação que assegure a transposição das deliberações do Conselho de Administração para os procedimentos documentados do SGQ, permitindo que exceções aprovadas permaneçam fora da informação documentada.',
+    alternativa:'Ponderou-se a hipótese de desconhecimento da deliberação pela equipa; foi afastada, por a deliberação ser do conhecimento dos intervenientes — a falha está na transposição documental e não na comunicação.',
+    w_what:'Rever os procedimentos ULSG.UE.PO.001 e ULSG.UE.PQ.002, incorporando o método aprovado para a UBI, e aditar ao circuito de controlo documental a verificação da coerência entre deliberações do CA e procedimentos.',
+    w_why:'Para eliminar a causa raiz: assegurar que qualquer deliberação com efeito nos processos da UE é transposta para a informação documentada.',
+    w_where:'Procedimentos ULSG.UE.PO.001 e ULSG.UE.PQ.002; ULSG.UE.Imp.009 — Controlo de Documentos do SGQ.',
+    w_when:'2026-05-18',w_who:'Gestor da Qualidade / Responsável da Unidade de Ensino',
+    w_how:'Revisão e nova emissão dos procedimentos, com aprovação e divulgação à equipa; inscrição da verificação de coerência na lista mestra de documentos.',
+    w_howmuch:'Sem custo associado.',
+    eficacia:'Por verificar',dataAvaliacao:'',eficaciaDesc:'',eficaciaEvid:'',
+    avaliadores:['Pedro Teixeira (Responsável UE)'],
+    estado:'Aguarda verificação de eficácia',
+    atualizaRiscos:'Sim',riscosQuais:'R06 — Indefinição quanto ao cumprimento dos controlos nos ficheiros e documentos em uso (ULSG.Imp.148).',
+    mudancasSGQ:'Sim',mudancasOnde:'ULSG.UE.PO.001.03 — Recurso ao Cartão de Identificação do Estagiário; ULSG.UE.PQ.002.04 — Gestão do Estágio.',
+    finalizadoPor:'Pedro Teixeira (Responsável UE)',dataFinal:'2026-05-18',
+    observacoes:'Registo migrado do formulário Microsoft Forms (NC 1/2026). O formulário de origem dava a eficácia como verificada em 18/05/2026, no mesmo dia da implementação da ação; a verificação foi reposta como pendente, por não ser possível demonstrar eficácia sem decorrer tempo suficiente para a causa se poder repetir.'};
+  state.recs.unshift(r); logH('Criação',r.codigo,'Registo migrado do formulário de origem');
+  save(); buildNav(); go('detalhe',r.id); toast('Registo NC 1/2026 carregado.');
+}
+
+
+/* =========================================================
+   CATÁLOGO DE PROCESSOS E DOCUMENTOS
+   ========================================================= */
+function catalogo(){
+  const tab=(tipo,titulo,desc)=>{
+    const L=state.catalogo[tipo];
+    const rows=L.map((e,i)=>`<tr>
+      <td><span class="code">${esc(e.cod)}</span></td>
+      <td>${esc(e.desig)}</td>
+      <td style="text-align:center">${esc(e.ver||'—')}</td>
+      <td>${esc(e.nat||'—')}</td>
+      <td>${usosCat(e.cod)}</td>
+      <td class="row-actions">
+        <button class="btn small ghost" onclick="editarCat('${tipo}',${i})">Editar</button>
+        <button class="btn small danger" onclick="apagarCat('${tipo}',${i})">Remover</button></td></tr>`).join('');
+    return `<div class="panel"><div class="panel-head"><h3>${titulo} <span class="chip neutral">${L.length}</span></h3>
+      <button class="btn small" onclick="novoCat('${tipo}')">＋ Acrescentar</button></div>
+      <div class="panel-body" style="padding-bottom:4px;color:var(--ink-soft);font-size:12.5px">${desc}</div>
+      <div class="table-wrap"><table class="grid"><thead><tr><th>Código</th><th>Designação</th><th>Versão</th><th>Natureza</th><th>Utilizações</th><th></th></tr></thead>
+      <tbody>${rows}</tbody></table></div></div>`;
+  };
+  $('#main').innerHTML=`
+    <div class="page-head"><div><span class="clause">Cláusula 7.5</span><h2>Processos e documentos do SGQ</h2>
+      <div class="sub">Catálogo que alimenta os campos «Processo(s) abrangido(s)» e «Documento(s) associado(s)» dos registos. Corresponde ao impresso ULSG.UE.Imp.009 — Controlo de Documentos do SGQ. Acrescente aqui qualquer processo ou documento novo; fica imediatamente disponível no formulário.</div></div>
+      <div class="actions-row"><button class="btn" onclick="reporCat()">Repor catálogo de origem</button></div></div>
+    ${tab('proc','Processos','Processos da Qualidade, Procedimentos Internos e Procedimentos Operativos.')}
+    ${tab('doc','Outros documentos','Política, manual, regulamento, modelos, impressos, relatórios e instruções de trabalho.')}`;
+}
+function usosCat(cod){
+  const n=state.recs.filter(r=>arr(r.processos).includes(cod)||arr(r.documentos).includes(cod)).length;
+  return n?`<span class="chip info">${n}</span>`:'<span style="color:var(--ink-soft)">—</span>';
+}
+function editarCat(tipo,i){
+  const e=state.catalogo[tipo][i];
+  const desig=prompt('Designação:',e.desig); if(desig===null) return;
+  const ver=prompt('Versão:',e.ver||''); if(ver===null) return;
+  const nat=prompt('Natureza:',e.nat||''); if(nat===null) return;
+  e.desig=desig.trim()||e.desig; e.ver=ver.trim(); e.nat=nat.trim();
+  logH('Catálogo',e.cod,'Entrada atualizada'); save(); render(); toast('Entrada atualizada.');
+}
+function apagarCat(tipo,i){
+  const e=state.catalogo[tipo][i];
+  const n=state.recs.filter(r=>arr(r.processos).includes(e.cod)||arr(r.documentos).includes(e.cod)).length;
+  if(n){ alert(`Não é possível remover: ${e.cod} está associado a ${n} registo(s).\n\nSe o documento passou a obsoleto, altere a designação ou a natureza em vez de o remover — o histórico deve manter a referência.`); return; }
+  if(!confirm(`Remover ${e.cod} do catálogo?`)) return;
+  state.catalogo[tipo].splice(i,1); logH('Catálogo',e.cod,'Entrada removida'); save(); render(); toast('Entrada removida.');
+}
+function reporCat(){
+  if(!confirm('Repor o catálogo conforme o ULSG.UE.Imp.009 de origem?\n\nAs entradas que acrescentou manualmente são mantidas.')) return;
+  ['proc','doc'].forEach(t=>{
+    CAT_BASE[t].forEach(([cod,desig,ver,nat])=>{
+      const e=state.catalogo[t].find(x=>x.cod===cod);
+      if(e){ e.desig=desig; e.ver=ver; e.nat=nat; } else state.catalogo[t].push({cod,desig,ver,nat});
+    });
+    state.catalogo[t].sort((a,b)=>a.cod.localeCompare(b.cod,'pt'));
+  });
+  logH('Catálogo','','Reposição do catálogo de origem'); save(); render(); toast('Catálogo reposto.');
+}
+
+/* =========================================================
+   LEITURA DE .XLSX (ZIP + XML) E DE .CSV, SEM BIBLIOTECAS
+   ========================================================= */
+function colIdx(l){ let n=0; for(const c of l) n=n*26+(c.charCodeAt(0)-64); return n-1; }
+function serieParaISO(n){
+  const ms=Math.round((n-25569)*86400000);
+  return new Date(ms).toISOString().slice(0,10);
+}
+async function lerXLSX(buf){
+  const dv=new DataView(buf), u8=new Uint8Array(buf), td=new TextDecoder();
+  let eocd=-1;
+  for(let i=u8.length-22;i>=0&&i>u8.length-66000;i--){ if(dv.getUint32(i,true)===0x06054b50){eocd=i;break;} }
+  if(eocd<0) throw new Error('O ficheiro não tem a estrutura de um .xlsx.');
+  const nEnt=dv.getUint16(eocd+10,true), cdOff=dv.getUint32(eocd+16,true);
+  const ficheiros={}; let p=cdOff;
+  for(let i=0;i<nEnt;i++){
+    if(dv.getUint32(p,true)!==0x02014b50) break;
+    const method=dv.getUint16(p+10,true), csize=dv.getUint32(p+20,true),
+      nlen=dv.getUint16(p+28,true), elen=dv.getUint16(p+30,true), clen=dv.getUint16(p+32,true),
+      lho=dv.getUint32(p+42,true);
+    ficheiros[td.decode(u8.subarray(p+46,p+46+nlen))]={method,csize,lho};
+    p+=46+nlen+elen+clen;
+  }
+  async function extrair(nome){
+    const f=ficheiros[nome]; if(!f) return null;
+    const ln=dv.getUint16(f.lho+26,true), le=dv.getUint16(f.lho+28,true);
+    const ini=f.lho+30+ln+le, dados=u8.subarray(ini,ini+f.csize);
+    if(f.method===0) return td.decode(dados);
+    if(typeof DecompressionStream==='undefined')
+      throw new Error('Este navegador não suporta a leitura direta de .xlsx. Guarde a folha como CSV e importe o CSV.');
+    const out=await new Response(new Blob([dados]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer();
+    return td.decode(out);
+  }
+  const ss=[], ssXml=await extrair('xl/sharedStrings.xml');
+  if(ssXml){
+    const d=new DOMParser().parseFromString(ssXml,'application/xml');
+    Array.from(d.getElementsByTagNameNS('*','si')).forEach(si=>{
+      let t=''; Array.from(si.getElementsByTagNameNS('*','t')).forEach(x=>t+=x.textContent); ss.push(t);
+    });
+  }
+  const folha=Object.keys(ficheiros).filter(n=>/^xl\/worksheets\/sheet\d+\.xml$/.test(n)).sort()[0];
+  if(!folha) throw new Error('Não foi encontrada nenhuma folha de cálculo no ficheiro.');
+  const d=new DOMParser().parseFromString(await extrair(folha),'application/xml');
+  const linhas=[];
+  Array.from(d.getElementsByTagNameNS('*','row')).forEach(r=>{
+    const lin=[];
+    Array.from(r.getElementsByTagNameNS('*','c')).forEach(c=>{
+      const ref=(c.getAttribute('r')||'').replace(/[0-9]/g,''), t=c.getAttribute('t');
+      const v=c.getElementsByTagNameNS('*','v')[0], is=c.getElementsByTagNameNS('*','is')[0];
+      let val=null;
+      if(t==='s'&&v) val=ss[+v.textContent];
+      else if(t==='inlineStr'&&is) val=is.textContent;
+      else if(t==='str'&&v) val=v.textContent;
+      else if(v){ const n=parseFloat(v.textContent); val=isNaN(n)?v.textContent:n; }
+      if(ref) lin[colIdx(ref)]=val;
+    });
+    linhas.push(lin);
+  });
+  return linhas;
+}
+function lerCSV(txt){
+  if(txt.charCodeAt(0)===0xFEFF) txt=txt.slice(1);
+  const sep=(txt.split('\n')[0].split(';').length>txt.split('\n')[0].split(',').length)?';':',';
+  const out=[]; let lin=[],campo='',asp=false;
+  for(let i=0;i<txt.length;i++){
+    const c=txt[i];
+    if(asp){ if(c==='"'){ if(txt[i+1]==='"'){campo+='"';i++;} else asp=false; } else campo+=c; }
+    else if(c==='"') asp=true;
+    else if(c===sep){ lin.push(campo); campo=''; }
+    else if(c==='\n'){ lin.push(campo); out.push(lin); lin=[]; campo=''; }
+    else if(c!=='\r') campo+=c;
+  }
+  if(campo!==''||lin.length){ lin.push(campo); out.push(lin); }
+  return out;
+}
+
+/* =========================================================
+   CORRESPONDÊNCIA DE COLUNAS E CONVERSÃO
+   ========================================================= */
+function norm(t){
+  return String(t==null?'':t).normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/\u00a0/g,' ').toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+}
+const MAP_EXATO={
+ 'tipo':'tipo','origem':'origem','data da ocorrencia':'dataOcorrencia','unidade':'unidade',
+ 'processo':'processoTxt','processos':'processoTxt','especificacao':'especificacao',
+ 'foto evidencias e outros anexos':'evidencias','o que fazer':'acaoImediata','quem vai fazer':'responsaveis',
+ 'quando':'dataInicio','ate quando':'dataLimite','porque 1':'p1','porque 2':'p2','porque 3':'p3','porque 4':'p4','porque 5':'p5',
+ 'ishikawa':'ishikawaTxt','causa raiz descricao':'causaRaizTxt','alternativa descricao detalhada':'alternativa',
+ 'avaliacao da eficacia':'eficacia','avaliacao da eficacia descricao':'eficaciaDesc','evidencia':'eficaciaEvid',
+ 'data da avaliacao':'dataAvaliacao','quem avaliou':'avaliadores','resultado':'estado',
+ 'ha necessidade de atualizar riscos e oportunidades':'atualizaRiscos',
+ 'ha necessidade de realizar mudancas no sgq':'mudancasSGQ','onde processos':'mudancasOnde',
+ 'quem finalizou o presente relatorio':'finalizadoPor','data':'dataFinal','id':'origemId','observacoes':'observacoes'};
+const MAP_PREFIXO=[['7 how much','w_howmuch'],['6 how','w_how'],['5 who','w_who'],['4 when','w_when'],
+  ['3 where','w_where'],['2 why','w_why'],['1 what','w_what']];
+const IGNORAR=['hora de inicio','hora de conclusao','e mail','nome','hora da ultima modificacao'];
+function mapearColuna(h){
+  const n=norm(h); if(!n||IGNORAR.includes(n)) return null;
+  if(MAP_EXATO[n]) return MAP_EXATO[n];
+  for(const [pre,k] of MAP_PREFIXO) if(n.startsWith(pre)) return k;
+  if(n.startsWith('porque')) { const m=n.match(/porque (\d)/); if(m) return 'p'+m[1]; }
+  return null;
+}
+const V_TIPO={'analise de nao conformidades':'Não conformidade','nao conformidade':'Não conformidade',
+ 'nao conformidades':'Não conformidade','reclamacoes':'Reclamação','reclamacao':'Reclamação',
+ 'sugestoes de melhoria':'Sugestão de melhoria','sugestao de melhoria':'Sugestão de melhoria',
+ 'pontos fracos':'Ponto fraco','ponto fraco':'Ponto fraco','elogios':'Elogio','elogio':'Elogio'};
+const V_UNID={'unidade ensino':'Unidade de Ensino','unidade de ensino':'Unidade de Ensino','biblioteca':'Biblioteca',
+ 'unidade ensino e biblioteca':'Unidade de Ensino e Biblioteca','unidade de ensino e biblioteca':'Unidade de Ensino e Biblioteca',
+ 'internato medico':'Internato Médico'};
+const V_EST={'fechado':'Fechado','aberto':'Aberto','em curso':'Em curso','anulado':'Anulado'};
+const V_EF={'sim':'Sim — causas eliminadas','nao':'Não — reabrir análise','parcialmente':'Parcialmente','nao aplicavel':'Não aplicável'};
+const CAUSA_CAT={}; Object.entries(ISHIKAWA).forEach(([c,l])=>l.forEach(x=>CAUSA_CAT[norm(x)]=[c,x]));
+function dataISO(v){
+  if(v==null||v==='') return '';
+  if(typeof v==='number') return serieParaISO(v);
+  const t=String(v).trim();
+  let m=t.match(/^(\d{4})-(\d{2})-(\d{2})/); if(m) return `${m[1]}-${m[2]}-${m[3]}`;
+  m=t.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+  if(m) return `${m[3]}-${String(m[2]).padStart(2,'0')}-${String(m[1]).padStart(2,'0')}`;
+  return '';
+}
+function partes(v){ return String(v==null?'':v).split(/[;\n]/).map(x=>x.trim()).filter(Boolean); }
+function converterLinha(bruto){
+  const r=novoDraft();
+  r.tipo=V_TIPO[norm(bruto.tipo)]||(bruto.tipo?String(bruto.tipo).trim():'Sugestão de melhoria');
+  r.origem=ORIGENS.find(o=>norm(o)===norm(bruto.origem))||(bruto.origem?String(bruto.origem).trim():'Outra');
+  r.dataOcorrencia=dataISO(bruto.dataOcorrencia)||today();
+  r.unidade=V_UNID[norm(bruto.unidade)]||(bruto.unidade?String(bruto.unidade).trim():'Unidade de Ensino');
+  r.especificacao=String(bruto.especificacao||'').trim();
+  r.evidencias=String(bruto.evidencias||'').trim();
+  r.acaoImediata=String(bruto.acaoImediata||'').trim();
+  r.responsaveis=partes(bruto.responsaveis);
+  r.dataInicio=dataISO(bruto.dataInicio); r.dataLimite=dataISO(bruto.dataLimite);
+  [1,2,3,4,5].forEach(i=>r['p'+i]=String(bruto['p'+i]||'').trim());
+  r.alternativa=String(bruto.alternativa||'').trim();
+  ['w_what','w_why','w_where','w_when','w_who','w_how','w_howmuch'].forEach(k=>r[k]=String(bruto[k]||'').trim());
+  r.eficacia=V_EF[norm(bruto.eficacia)]||'Por verificar';
+  r.eficaciaDesc=String(bruto.eficaciaDesc||'').trim();
+  r.eficaciaEvid=String(bruto.eficaciaEvid||'').trim();
+  r.dataAvaliacao=dataISO(bruto.dataAvaliacao);
+  r.avaliadores=partes(bruto.avaliadores);
+  r.estado=V_EST[norm(bruto.estado)]||(r.eficacia==='Por verificar'?'Em curso':'Aguarda verificação de eficácia');
+  r.atualizaRiscos=/^s/i.test(String(bruto.atualizaRiscos||'').trim())?'Sim':'Não';
+  r.mudancasSGQ=/^s/i.test(String(bruto.mudancasSGQ||'').trim())?'Sim':'Não';
+  r.mudancasOnde=String(bruto.mudancasOnde||'').trim();
+  r.finalizadoPor=PESSOAS.find(x=>norm(x)===norm(bruto.finalizadoPor))||String(bruto.finalizadoPor||'').trim();
+  r.dataFinal=dataISO(bruto.dataFinal);
+  // categorias de Ishikawa assinaladas no formulário de origem
+  partes(bruto.ishikawaTxt).forEach(c=>{
+    const cat=Object.keys(ISHIKAWA).find(k=>norm(k)===norm(c));
+    if(cat) r.ishikawaOutro[cat]='Categoria assinalada no formulário de origem';
+  });
+  // a coluna «Causa Raiz» do formulário continha a lista de causas normalizadas
+  const soltos=[];
+  partes(bruto.causaRaizTxt).forEach(x=>{
+    const m=CAUSA_CAT[norm(x)];
+    if(m){ r.ishikawa[m[0]]=arr(r.ishikawa[m[0]]).concat([m[1]]); } else soltos.push(x);
+  });
+  r.causaRaiz=soltos.join('; ');
+  // processos e documentos a partir do texto livre
+  const txt=[bruto.processoTxt,bruto.mudancasOnde].filter(Boolean).join(' ; ');
+  const achados=new Set((String(txt).match(/ULSG\.(?:UE\.)?(?:PQ|PI|PO|Imp|Mod|Reg|PL|Rel|IT|Man)\.\d{3}/gi)||[])
+    .map(c=>c.replace(/ULSG\.UE\.(Man)/i,'ULSG.$1')));
+  const aviso=[];
+  achados.forEach(c=>{
+    const e=catEntry(c);
+    if(!e){ aviso.push(c); return; }
+    const dest=state.catalogo.proc.includes(e)?'processos':'documentos';
+    if(!r[dest].includes(c)) r[dest]=r[dest].concat([c]);
+  });
+  const livre=String(bruto.processoTxt||'').trim();
+  if(livre && !/^ULSG/i.test(livre.replace(/\s/g,'').slice(0,4))) r.processosTexto=livre;
+  else if(aviso.length) r.processosTexto=aviso.join('; ');
+  r.observacoes=[bruto.origemId?`Registo migrado do formulário Microsoft Forms (ID de origem ${bruto.origemId}).`:'',
+    String(bruto.observacoes||'').trim()].filter(Boolean).join(' ');
+  r._naoMapeado=aviso;
+  return r;
+}
+
+/* =========================================================
+   ECRÃ DE IMPORTAÇÃO
+   ========================================================= */
+let impPrev=null;
+function duplicado(r){
+  const chave=t=>norm(t).slice(0,30);
+  return state.recs.find(x=>
+    (x.especificacao&&r.especificacao&&x.especificacao.trim()===r.especificacao.trim())||
+    (x.dataOcorrencia===r.dataOcorrencia&&chave(x.especificacao)&&chave(x.especificacao)===chave(r.especificacao)));
+}
+$('#importXls').addEventListener('change',async function(){
+  const f=this.files[0]; this.value=''; if(!f) return;
+  try{
+    let linhas;
+    if(/\.csv$/i.test(f.name)) linhas=lerCSV(await f.text());
+    else linhas=await lerXLSX(await f.arrayBuffer());
+    linhas=linhas.filter(l=>l&&l.some(c=>c!=null&&String(c).trim()!==''));
+    if(linhas.length<2) throw new Error('A folha não tem linhas de dados.');
+    const cab=linhas[0], mapa=cab.map(mapearColuna);
+    const reconhecidas=mapa.filter(Boolean).length;
+    if(reconhecidas<5) throw new Error('Não foi possível reconhecer as colunas. Confirme que a primeira linha contém os títulos das perguntas do formulário.');
+    const brutos=linhas.slice(1).map(l=>{ const o={}; mapa.forEach((k,i)=>{ if(k&&l[i]!=null&&String(l[i]).trim()!=='') o[k]=l[i]; }); return o; })
+      .filter(o=>Object.keys(o).length>1);
+    const regs=brutos.map(converterLinha);
+    regs.forEach(r=>{ const d=duplicado(r); if(d){ r._dup=d.codigo; r._skip=true; } });
+    regs.sort((a,b)=>(a.dataOcorrencia||'').localeCompare(b.dataOcorrencia||''));
+    impPrev={ficheiro:f.name,cab,mapa,regs,
+      ignoradas:cab.filter((h,i)=>!mapa[i]&&String(h||'').trim()&&!IGNORAR.includes(norm(h)))};
+    go('importar');
+  }catch(e){ alert('Não foi possível ler o ficheiro.\n\n'+(e.message||e)); }
+});
+function telaImport(){
+  if(!impPrev){ go('exportar'); return; }
+  const P=impPrev;
+  const porTipo={}; P.regs.forEach(r=>porTipo[r.tipo]=(porTipo[r.tipo]||0)+1);
+  const semProc=P.regs.filter(r=>!r.processos.length&&!r.documentos.length).length;
+  const naoMap=[...new Set(P.regs.flatMap(r=>r._naoMapeado||[]))];
+  const dup=P.regs.filter(r=>r._dup).length;
+  const tab=P.regs.map((r,i)=>`<tr>
+    <td>${chip(r.tipo,CH_TIPO)}</td><td>${fmtD(r.dataOcorrencia)}</td>
+    <td><span class="trunc" title="${esc(r.especificacao)}">${esc(r.especificacao)||'—'}</span>${r._dup?`<br><span class="chip warn">possível duplicado de ${esc(r._dup)}</span>`:''}</td>
+    <td><span class="trunc" style="max-width:150px">${esc(r.processos.concat(r.documentos).map(c=>c.replace('ULSG.UE.','')).join(', '))||'—'}</span></td>
+    <td>${chip(r.estado,CH_EST)}</td>
+    <td><label style="font-size:12.5px;display:flex;gap:6px;align-items:center"><input type="checkbox" ${r._skip?'':'checked'} onchange="impPrev.regs[${i}]._skip=!this.checked">importar</label></td></tr>`).join('');
+  $('#main').innerHTML=`
+    <div class="page-head"><div><span class="clause">Importação</span><h2>Pré-visualização</h2>
+      <div class="sub">Ficheiro <strong>${esc(P.ficheiro)}</strong> — ${P.regs.length} registo(s) detetado(s), ${P.mapa.filter(Boolean).length} coluna(s) reconhecida(s). Confirme antes de importar; nada é gravado até premir «Importar».</div></div>
+      <div class="actions-row"><button class="btn" onclick="impPrev=null;go('exportar')">Cancelar</button>
+      <button class="btn primary" onclick="confirmarImport()">Importar registos</button></div></div>
+    <div class="panel"><div class="panel-head"><h3>Modo de importação</h3></div>
+      <div class="panel-body" style="display:flex;gap:9px;flex-wrap:wrap;align-items:center">
+        <button class="btn ${P.modo!=='substituir'?'primary':''}" onclick="modoImport('acrescentar')">Acrescentar aos existentes</button>
+        <button class="btn ${P.modo==='substituir'?'primary':''}" onclick="modoImport('substituir')">Substituir tudo e renumerar</button>
+        <span style="font-size:12.5px;color:var(--ink-soft);flex:1;min-width:230px">${P.modo==='substituir'
+          ? 'Os '+state.recs.length+' registo(s) atuais são apagados e a numeração recomeça em 1 para cada tipo e ano.'
+          : 'Os registos são acrescentados; a numeração continua a partir do último código de cada tipo e ano.'}</span>
+      </div></div>
+    ${semProc?`<div class="alertbox">${semProc} registo(s) sem processo ou documento identificado — a coluna «Processo» do formulário continha texto livre, que foi preservado no campo «Outra referência».</div>`:''}
+    ${naoMap.length?`<div class="alertbox">Referências encontradas que não constam do catálogo: ${esc(naoMap.join(', '))}. Pode acrescentá-las em «Processos e documentos» e depois corrigir os registos.</div>`:''}
+    ${dup&&P.modo!=='substituir'?`<div class="alertbox bad">${dup} registo(s) correspondem a registos já existentes e foram <strong>desmarcados</strong>. Marque-os apenas se pretender mesmo duplicar.</div>`:''}
+    ${P.ignoradas.length?`<div class="alertbox info">Colunas não utilizadas: ${esc(P.ignoradas.join(', '))}.</div>`:''}
+    <div class="panel"><div class="panel-head"><h3>Distribuição por tipo</h3></div>
+      <div class="panel-body">${barras(porTipo)}</div></div>
+    <div class="panel"><div class="panel-head"><h3>Registos a importar</h3></div>
+      <div class="table-wrap"><table class="grid"><thead><tr><th>Tipo</th><th>Data</th><th>Especificação</th><th>Processos / documentos</th><th>Estado</th><th></th></tr></thead>
+      <tbody>${tab}</tbody></table></div></div>`;
+}
+function modoImport(m){
+  if(!impPrev) return;
+  impPrev.modo=m;
+  if(m==='substituir') impPrev.regs.forEach(r=>{ r._skip=false; });
+  else impPrev.regs.forEach(r=>{ const d=duplicado(r); r._dup=d?d.codigo:null; r._skip=!!d; });
+  telaImport();
+}
+function confirmarImport(){
+  if(!impPrev) return;
+  const sel=impPrev.regs.filter(r=>!r._skip);
+  if(!sel.length){ toast('Nenhum registo selecionado.'); return; }
+  if(impPrev.modo==='substituir'){
+    if(state.recs.length && !confirm(`Substituir os ${state.recs.length} registo(s) atuais pelos ${sel.length} registo(s) a importar?\n\nA numeração recomeça em 1. Esta operação não pode ser anulada.`)) return;
+    const antes=state.recs.length;
+    state.recs=[]; state.seq={};
+    if(antes) logH('Reposição','',`${antes} registo(s) substituídos na importação`);
+  }
+  let n=0;
+  sel.forEach(r=>{
+    const ano=(r.dataOcorrencia||today()).slice(0,4);
+    const rec=Object.assign({id:uid(),codigo:codigo(r.tipo,ano),criadoEm:nowISO(),importadoEm:nowISO()},r);
+    delete rec._skip; delete rec._naoMapeado; delete rec._dup;
+    state.recs.push(rec); n++;
+  });
+  state.recs.sort((a,b)=>(b.dataOcorrencia||'').localeCompare(a.dataOcorrencia||''));
+  logH('Importação','',`${n} registo(s) de «${impPrev.ficheiro}»`);
+  save(); impPrev=null; buildNav(); go('registos');
+  toast(`${n} registo(s) importado(s).`);
+}
+
+
+/* =========================================================
+   SALVAGUARDA DOS DADOS
+   O armazenamento do navegador é apagável pelo utilizador e
+   pelas políticas do posto de trabalho. Daí a cópia automática.
+   ========================================================= */
+function diasDesdeBackup(){
+  if(!state.backup||!state.backup.ultimo) return null;
+  return Math.floor((Date.now()-new Date(state.backup.ultimo))/86400000);
+}
+function riscoBackup(){
+  const p=(state.backup&&state.backup.pendentes)||0, d=diasDesdeBackup();
+  if(!state.recs.length) return null;
+  if(d===null) return {n:'bad',t:'Nunca foi feita uma cópia de segurança destes dados.'};
+  if(d>=7||p>=25) return {n:'bad',t:`Última cópia há ${d} dia(s), com ${p} alteração(ões) por salvaguardar.`};
+  if(p>0&&d>=2) return {n:'',t:`Última cópia há ${d} dia(s), com ${p} alteração(ões) por salvaguardar.`};
+  return null;
+}
+function bannerBackup(){
+  const r=riscoBackup(); if(!r) return '';
+  return `<div class="alertbox ${r.n}" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+    <span style="flex:1;min-width:240px">${r.t} Os dados vivem no armazenamento deste navegador: limpar «cookies e dados de sites» elimina-os.</span>
+    <button class="btn small" onclick="expJSON()">Exportar agora</button>
+    <button class="btn small" onclick="go('exportar')">Cópia automática</button></div>`;
+}
+
+/* --- guardar o identificador do ficheiro de cópia entre sessões --- */
+function idbAbrir(){
+  return new Promise((res,rej)=>{
+    if(typeof indexedDB==='undefined') return rej(new Error('sem indexedDB'));
+    const r=indexedDB.open('ulsg_ue_nc',1);
+    r.onupgradeneeded=()=>{ try{ r.result.createObjectStore('kv'); }catch(e){} };
+    r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error);
+  });
+}
+async function idbPor(k,v){ try{ const d=await idbAbrir(); await new Promise((res,rej)=>{
+  const t=d.transaction('kv','readwrite'); t.objectStore('kv').put(v,k); t.oncomplete=res; t.onerror=()=>rej(t.error); }); }catch(e){} }
+async function idbLer(k){ try{ const d=await idbAbrir(); return await new Promise((res,rej)=>{
+  const t=d.transaction('kv','readonly'); const q=t.objectStore('kv').get(k); q.onsuccess=()=>res(q.result); q.onerror=()=>rej(q.error); }); }catch(e){ return null; } }
+
+let autoHandle=null, autoEstado='inativa', autoTimer=null;
+function autoSuportada(){ return typeof window!=='undefined' && typeof window.showSaveFilePicker==='function'; }
+async function ativarAuto(){
+  if(!autoSuportada()){
+    alert('Este navegador não permite gravar diretamente num ficheiro.\n\nFuncionalidade disponível no Chrome e no Edge. Em alternativa, exporte o JSON manualmente com regularidade.');
+    return;
+  }
+  try{
+    const h=await window.showSaveFilePicker({suggestedName:'ulsg-ue-nc-copia-automatica.json',
+      types:[{description:'Cópia de segurança JSON',accept:{'application/json':['.json']}}]});
+    autoHandle=h; await idbPor('autoHandle',h);
+    autoEstado='ativa';
+    await gravarAuto(true);
+    render(); toast('Cópia automática ativada.');
+  }catch(e){ if(e&&e.name!=='AbortError') alert('Não foi possível ativar a cópia automática.\n\n'+(e.message||e)); }
+}
+async function desativarAuto(){
+  autoHandle=null; autoEstado='inativa'; await idbPor('autoHandle',null);
+  render(); toast('Cópia automática desativada.');
+}
+function agendarAuto(){
+  if(!autoHandle||autoEstado!=='ativa') return;
+  clearTimeout(autoTimer); autoTimer=setTimeout(()=>gravarAuto(false),1500);
+}
+async function gravarAuto(comGesto){
+  if(!autoHandle) return false;
+  try{
+    if(autoHandle.queryPermission){
+      let perm=await autoHandle.queryPermission({mode:'readwrite'});
+      if(perm!=='granted'){
+        if(!comGesto){ autoEstado='autorizar'; return false; }
+        perm=await autoHandle.requestPermission({mode:'readwrite'});
+        if(perm!=='granted'){ autoEstado='autorizar'; return false; }
+      }
+    }
+    const w=await autoHandle.createWritable();
+    await w.write(JSON.stringify({aplicacao:'ULSG · UE — Análise de NC, Reclamações, SM e Elogios',
+      versao:1,exportadoEm:nowISO(),dados:state},null,2));
+    await w.close();
+    autoEstado='ativa';
+    state.backup={ultimo:nowISO(),pendentes:0}; persistRaw();
+    return true;
+  }catch(e){ autoEstado='erro'; return false; }
+}
+async function retomarAuto(){
+  const ok=await gravarAuto(true);
+  render(); toast(ok?'Cópia automática retomada.':'Não foi possível aceder ao ficheiro. Escolha-o novamente.');
+}
+async function iniciarSalvaguarda(){
+  try{ if(navigator.storage&&navigator.storage.persist) await navigator.storage.persist(); }catch(e){}
+  const h=await idbLer('autoHandle');
+  if(h){
+    autoHandle=h;
+    try{
+      const perm=h.queryPermission?await h.queryPermission({mode:'readwrite'}):'granted';
+      autoEstado = perm==='granted' ? 'ativa' : 'autorizar';
+      if(autoEstado==='ativa') gravarAuto(false);
+    }catch(e){ autoEstado='autorizar'; }
+    if(view==='painel'||view==='exportar') render();
+  }
+}
+function painelAuto(){
+  const est={
+    inativa:['neutral','Inativa','Nenhum ficheiro de cópia definido.'],
+    ativa:['ok','Ativa','Cada alteração é gravada no ficheiro que escolheu.'],
+    autorizar:['warn','Por autorizar','O navegador precisa que confirme de novo o acesso ao ficheiro, nesta sessão.'],
+    erro:['bad','Com erro','A última gravação falhou. O ficheiro pode ter sido movido ou apagado.']
+  }[autoEstado]||['neutral','Inativa',''];
+  const d=diasDesdeBackup();
+  return `<div class="panel"><div class="panel-head"><h3>Cópia automática</h3><span class="chip ${est[0]}">${est[1]}</span></div>
+    <div class="panel-body">
+      <p style="font-size:13px;color:var(--ink-soft);margin-bottom:12px">${est[2]}
+        Escolha um ficheiro numa pasta de rede ou numa pasta sincronizada e a aplicação grava aí uma cópia JSON sempre que algo muda.
+        É a forma de não depender do armazenamento do navegador.
+        ${autoSuportada()?'':'<br><strong>Este navegador não suporta esta funcionalidade</strong> — disponível no Chrome e no Edge. Em alternativa, exporte o JSON com regularidade.'}</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        ${autoEstado==='autorizar'?'<button class="btn primary" onclick="retomarAuto()">Autorizar e retomar</button>':''}
+        <button class="btn ${autoEstado==='ativa'?'':'primary'}" onclick="ativarAuto()" ${autoSuportada()?'':'disabled'}>${autoEstado==='inativa'?'Escolher ficheiro de cópia':'Escolher outro ficheiro'}</button>
+        ${autoEstado!=='inativa'?'<button class="btn danger" onclick="desativarAuto()">Desativar</button>':''}
+      </div>
+      <div style="font-size:12.5px;color:var(--ink-soft);margin-top:12px">
+        Última cópia: <strong>${state.backup&&state.backup.ultimo?fmtTs(state.backup.ultimo)+(d!==null?` (há ${d} dia(s))`:''):'nunca'}</strong> ·
+        alterações por salvaguardar: <strong>${(state.backup&&state.backup.pendentes)||0}</strong>
+      </div>
+    </div></div>`;
+}
+
+/* ---------- arranque ---------- */
+buildNav(); render(); iniciarSalvaguarda();
+</script>
+</body>
+</html>
