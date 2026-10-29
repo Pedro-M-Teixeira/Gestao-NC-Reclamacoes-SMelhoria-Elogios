@@ -1,7 +1,7 @@
 # Análise de Não Conformidades, Reclamações, Sugestões de Melhoria e Elogios
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23767960.svg)](https://doi.org/10.5281/zenodo.23767960)
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)](https://developer.mozilla.org/docs/Web/HTML)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/docs/Web/JavaScript)
 [![Sem dependências](https://img.shields.io/badge/depend%C3%AAncias-nenhuma-2E7D5B)](#requisitos)
@@ -12,9 +12,8 @@ Aplicação autónoma, num único ficheiro HTML, para o registo e tratamento de 
 reclamações, sugestões de melhoria e elogios no âmbito de um sistema de gestão da qualidade
 certificado pela NP EN ISO 9001:2015.
 
-Foi desenvolvida para a Unidade de Ensino da Unidade Local de Saúde da Guarda, E.P.E., em substituição
-de um formulário Microsoft Forms que, não mantendo registo acumulado, não permitia demonstrar o estado
-de tratamento das ocorrências nem produzir a evidência exigida em auditoria.
+Foi desenvolvida por Pedro Teixeira para a Unidade de Ensino da Unidade Local de Saúde da Guarda, E.P.E., em substituição
+de um formulário Microsoft Forms que, não mantendo registo acumulado, não permitia demonstrar o estado de tratamento das ocorrências nem produzir a evidência exigida em auditoria.
 
 ---
 
@@ -103,7 +102,7 @@ reposição — que constitui evidência de controlo da informação documentada
 Não há instalação. A aplicação é um ficheiro HTML único, sem dependências externas, sem servidor e sem
 ligação à Internet.
 
-1. Descarregue `analise-nc.html` a partir da secção *Releases* ou do próprio repositório.
+1. Descarregue `indice.html` a partir da secção *Releases* ou do próprio repositório.
 2. Abra o ficheiro no navegador, com duplo clique.
 3. No primeiro arranque, o painel propõe carregar um registo de demonstração, que pode eliminar depois.
 
@@ -128,19 +127,6 @@ limitação e propõe a alternativa (importar CSV, exportar JSON manualmente).
 Não utiliza bibliotecas externas, CDN, telemetria ou quaisquer pedidos de rede. A leitura de ficheiros
 `.xlsx` é feita por um descompactador ZIP e um analisador de XML implementados no próprio ficheiro.
 
-## Importação a partir do Microsoft Forms
-
-A aplicação lê diretamente a folha exportada do Microsoft Forms, em `.xlsx` ou `.csv`, sem conversão
-prévia. A correspondência das colunas é automática e cobre as 37 perguntas do formulário de origem.
-
-Durante a importação:
-
-- Os tipos de registo do formulário são convertidos para a taxonomia da aplicação.
-- Os códigos de processos e documentos são extraídos do texto das colunas «Processo» e «Onde?
-  Processos?»; o que não for código é preservado num campo de texto livre.
-- As causas normalizadas são recolocadas nas categorias de Ishikawa correspondentes.
-- Os códigos são atribuídos pelo ano da ocorrência, respeitando a ordem cronológica.
-- Os registos coincidentes com registos já existentes são detetados e desmarcados.
 
 Antes de gravar, é apresentada uma pré-visualização com a distribuição por tipo, os avisos de
 correspondência e a escolha entre **acrescentar aos registos existentes** ou **substituir tudo e
@@ -209,7 +195,7 @@ constante `CAT_BASE`.
 
 ```
 .
-├── analise-nc.html     # a aplicação (ficheiro único, autónomo)
+├── indice.html     # a aplicação (ficheiro único, autónomo)
 ├── README.md
 ├── CITATION.cff        # metadados de citação
 ├── LICENSE             # licença MIT
@@ -235,11 +221,8 @@ Zenodo. O ficheiro [`CITATION.cff`](CITATION.cff) contém os metadados completos
 GitHub, que apresenta a citação formatada no painel lateral do repositório.
 
 > Marques Teixeira, P. M. (2026). *Análise de Não Conformidades, Reclamações, Sugestões de Melhoria e
-> Elogios* (versão 1.0.0) [Software]. Zenodo. https://doi.org/10.5281/zenodo.XXXXXXX
+> Elogios* (versão 1.0.0) [Software]. Zenodo. https://doi.org/10.5281/zenodo.23767960
 
-Para obter o DOI: associe o repositório ao Zenodo em <https://zenodo.org/account/settings/github/>,
-publique uma *release* no GitHub e o DOI é atribuído automaticamente. Substitua depois `XXXXXXX` pelo
-identificador emitido, neste ficheiro, no `CITATION.cff` e no `.zenodo.json`.
 
 ## Licença
 
