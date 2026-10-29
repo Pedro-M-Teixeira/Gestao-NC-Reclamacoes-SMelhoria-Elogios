@@ -1,0 +1,46 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: >-
+  Análise de Não Conformidades, Reclamações, Sugestões de
+  Melhoria e Elogios
+message: >-
+  Aplicação autónoma em HTML para o registo e tratamento de
+  ocorrências no âmbito da NP EN ISO 9001:2015
+type: software
+authors:
+  - given-names: Pedro Miguel
+    family-names: Marques Teixeira
+    email: pmtex69@gmail.com
+    orcid: 'https://orcid.org/0009-0005-7035-6736'
+    affiliation: Unidade Local de Saúde da Guarda, E.P.E.
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.XXXXXXX
+    description: Depósito no Zenodo
+repository-code: 'https://github.com/Pedro-M-Teixeira/analise-nc'
+abstract: >-
+  Ficheiro HTML único, sem dependências e sem ligação à
+  Internet, para registar e tratar não conformidades,
+  reclamações, sugestões de melhoria e elogios num sistema de
+  gestão da qualidade. Inclui análise de causas pelos cinco
+  porquês e por diagrama de Ishikawa, plano de ação em 5W2H,
+  verificação da eficácia, catálogo editável de processos e
+  documentos, painel de acompanhamento, importação direta de
+  folhas exportadas do Microsoft Forms, relatórios PDF para
+  arquivo e para a revisão pela gestão, e exportação em JSON e
+  XLS. Os dados permanecem no computador de quem a utiliza.
+keywords:
+  - ISO 9001
+  - gestão da qualidade
+  - não conformidades
+  - ação corretiva
+  - análise de causa raiz
+  - Ishikawa
+  - melhoria contínua
+  - saúde
+  - aplicação offline
+license: MIT
+version: 1.0.0
+date-released: '2026-10-29'

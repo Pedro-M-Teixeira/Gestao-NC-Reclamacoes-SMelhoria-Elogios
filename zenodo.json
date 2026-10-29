@@ -1,0 +1,28 @@
+{
+  "title": "Análise de Não Conformidades, Reclamações, Sugestões de Melhoria e Elogios",
+  "description": "<p>Aplicação autónoma, num único ficheiro HTML, para o registo e tratamento de não conformidades, reclamações, sugestões de melhoria e elogios no âmbito de um sistema de gestão da qualidade certificado pela NP EN ISO 9001:2015.</p><p>Inclui análise de causas pelos cinco porquês e por diagrama de Ishikawa, plano de ação corretiva em 5W2H, verificação da eficácia com bloqueio de fecho sem verificação, catálogo editável de processos e documentos, painel de acompanhamento, análise agregada de causas recorrentes, importação direta de folhas exportadas do Microsoft Forms (.xlsx e .csv), relatórios PDF individual e consolidado, e exportação em JSON e XLS.</p><p>Executa integralmente no computador de quem a utiliza, sem servidor, sem dependências externas e sem qualquer transmissão de dados.</p>",
+  "upload_type": "software",
+  "language": "por",
+  "license": "MIT",
+  "access_right": "open",
+  "version": "1.0.0",
+  "creators": [
+    {
+      "name": "Marques Teixeira, Pedro Miguel",
+      "orcid": "0009-0005-7035-6736",
+      "affiliation": "Unidade Local de Saúde da Guarda, E.P.E."
+    }
+  ],
+  "keywords": [
+    "ISO 9001",
+    "gestão da qualidade",
+    "não conformidades",
+    "ação corretiva",
+    "análise de causa raiz",
+    "Ishikawa",
+    "5W2H",
+    "melhoria contínua",
+    "saúde",
+    "aplicação offline"
+  ]
+}
