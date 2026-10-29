@@ -19,7 +19,7 @@ identifiers:
   - type: doi
     value: 10.5281/zenodo.XXXXXXX
     description: Depósito no Zenodo
-repository-code: 'https://github.com/Pedro-M-Teixeira/analise-nc'
+repository-code: 'https://doi.org/10.5281/zenodo.23767960'
 abstract: >-
   Ficheiro HTML único, sem dependências e sem ligação à
   Internet, para registar e tratar não conformidades,
